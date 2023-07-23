@@ -1,3 +1,3 @@
 # Lab0Compis
-Aprendiendo a usar ANTLR
-Es necesario instalar ANTLR4
+Install ANTL4
+and JAVA 11
