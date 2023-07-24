@@ -203,12 +203,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitStart" ):
                 listener.exitStart(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStart" ):
-                return visitor.visitStart(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -259,12 +253,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitProgram" ):
                 listener.exitProgram(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitProgram" ):
-                return visitor.visitProgram(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -339,12 +327,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitClassExpr" ):
                 listener.exitClassExpr(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitClassExpr" ):
-                return visitor.visitClassExpr(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -440,12 +422,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitMethod" ):
                 listener.exitMethod(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitMethod" ):
-                return visitor.visitMethod(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class AttributeContext(FeatureContext):
 
@@ -470,12 +446,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAttribute" ):
                 listener.exitAttribute(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAttribute" ):
-                return visitor.visitAttribute(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -584,12 +554,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitFormal" ):
                 listener.exitFormal(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFormal" ):
-                return visitor.visitFormal(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -653,12 +617,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitAdd" ):
                 listener.exitAdd(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAdd" ):
-                return visitor.visitAdd(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class NewContext(ExprContext):
 
@@ -679,12 +637,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitNew" ):
                 listener.exitNew(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNew" ):
-                return visitor.visitNew(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class NegationContext(ExprContext):
 
@@ -703,12 +655,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitNegation" ):
                 listener.exitNegation(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNegation" ):
-                return visitor.visitNegation(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class DispatchContext(ExprContext):
@@ -736,12 +682,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitDispatch" ):
                 listener.exitDispatch(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDispatch" ):
-                return visitor.visitDispatch(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class StringContext(ExprContext):
 
@@ -759,12 +699,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitString" ):
                 listener.exitString(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitString" ):
-                return visitor.visitString(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class AssignmentContext(ExprContext):
@@ -789,12 +723,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitAssignment" ):
                 listener.exitAssignment(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAssignment" ):
-                return visitor.visitAssignment(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class FalseContext(ExprContext):
 
@@ -813,12 +741,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitFalse" ):
                 listener.exitFalse(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFalse" ):
-                return visitor.visitFalse(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class IntegerContext(ExprContext):
 
@@ -836,12 +758,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitInteger" ):
                 listener.exitInteger(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitInteger" ):
-                return visitor.visitInteger(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class WhileContext(ExprContext):
@@ -871,12 +787,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitWhile" ):
                 listener.exitWhile(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitWhile" ):
-                return visitor.visitWhile(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class ParenthesisContext(ExprContext):
 
@@ -895,12 +805,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitParenthesis" ):
                 listener.exitParenthesis(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParenthesis" ):
-                return visitor.visitParenthesis(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class EqualContext(ExprContext):
@@ -926,12 +830,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitEqual" ):
                 listener.exitEqual(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitEqual" ):
-                return visitor.visitEqual(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class NotContext(ExprContext):
 
@@ -953,12 +851,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitNot" ):
                 listener.exitNot(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNot" ):
-                return visitor.visitNot(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class IsVoidContext(ExprContext):
 
@@ -979,12 +871,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIsVoid" ):
                 listener.exitIsVoid(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIsVoid" ):
-                return visitor.visitIsVoid(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class FunctionContext(ExprContext):
@@ -1010,12 +896,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitFunction" ):
                 listener.exitFunction(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFunction" ):
-                return visitor.visitFunction(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class LessThanContext(ExprContext):
 
@@ -1040,12 +920,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitLessThan" ):
                 listener.exitLessThan(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLessThan" ):
-                return visitor.visitLessThan(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class BracketContext(ExprContext):
 
@@ -1068,12 +942,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitBracket" ):
                 listener.exitBracket(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBracket" ):
-                return visitor.visitBracket(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class TrueContext(ExprContext):
 
@@ -1091,12 +959,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitTrue" ):
                 listener.exitTrue(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitTrue" ):
-                return visitor.visitTrue(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class LetContext(ExprContext):
@@ -1137,12 +999,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitLet" ):
                 listener.exitLet(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLet" ):
-                return visitor.visitLet(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class DivideContext(ExprContext):
 
@@ -1167,12 +1023,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitDivide" ):
                 listener.exitDivide(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDivide" ):
-                return visitor.visitDivide(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class IdContext(ExprContext):
 
@@ -1190,12 +1040,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitId" ):
                 listener.exitId(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitId" ):
-                return visitor.visitId(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class LessEqualContext(ExprContext):
@@ -1221,12 +1065,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitLessEqual" ):
                 listener.exitLessEqual(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLessEqual" ):
-                return visitor.visitLessEqual(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class MultiplyContext(ExprContext):
 
@@ -1250,12 +1088,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitMultiply" ):
                 listener.exitMultiply(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitMultiply" ):
-                return visitor.visitMultiply(self)
-            else:
-                return visitor.visitChildren(self)
 
 
     class IfElseContext(ExprContext):
@@ -1287,12 +1119,6 @@ class YAPLParser ( Parser ):
             if hasattr( listener, "exitIfElse" ):
                 listener.exitIfElse(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIfElse" ):
-                return visitor.visitIfElse(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class SubstractContext(ExprContext):
 
@@ -1316,12 +1142,6 @@ class YAPLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSubstract" ):
                 listener.exitSubstract(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSubstract" ):
-                return visitor.visitSubstract(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 

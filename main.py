@@ -1,38 +1,25 @@
-import os
 from antlr4 import *
-import sys
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
-from antlr4.InputStream import InputStream
+from YAPLVisitor_edited_base import YaplVisitorEditedBase
 from antlr4.tree.Trees import Trees
 
 def main():
-
-    filename = input("dame el filename: ")   
-    
-    data = FileStream(filename)
-    print('data')
-    print(data)
-
-    #Lexer y Parser de ANTLR
-    #comps1
+    filename = input('filename:')
+    file = filename
+    data = FileStream(file)
+    #lexer
     lexer = YAPLLexer(data)
     stream = CommonTokenStream(lexer)
+    #parser
     parser = YAPLParser(stream)
     tree = parser.program()
-    print(Trees.toStringTree(tree,None,parser))
-    print('tree')
 
-    print(tree)
-
-
-    print("Tokens:")
-    for token in stream.tokens:
-        print(" ",token.text, ':', token.type)
-    comand = 'antlr4-parse YAPL.g4 program -gui %s'%filename
-    os.system(comand)
-
-   
+    #Semantic analysis
+    visitor = YaplVisitorEditedBase()
+    result = visitor.visit(tree)
+    # Showing tables
+    
 if __name__ == "__main__":
     main()
-    
+    #tablePrint()
