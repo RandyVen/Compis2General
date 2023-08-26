@@ -2,9 +2,44 @@ from YAPLVisitor import *
 from errors import semanticError
 from YAPLParser import *
 
-class YaplVisitorEditedBase(YAPLVisitor):
+from table.attribute_table import *
+from table.class_table import *
+from table.function_table import *
+from table.types_table import *
 
-    # Visit a parse tree produced by YAPLParser#add.
+attributeTable = AttributeTable()
+typesTable = TypesTable()
+classTable = ClassTable()
+functionTable = FunctionTable()
+
+class YaplVisitorEditedBase(YAPLVisitor):
+    def visitClass(self, ctx:YAPLParser.ClassExprContext):
+        className = ctx.TYPEID()[0]
+        entry = ClassTableEntry(className)
+        classTable.addEntry(entry)
+        return self.visitChildren(ctx)
+
+    def visitMethod(self, ctx:YAPLParser.MethodContext):
+         functionName = ctx.OBJECTID()
+         type = ctx.TYPEID()
+         entry = FunctionTableEntry(functionName, type)
+         functionTable.addEntry(entry)
+         return self.visitChildren(ctx)
+    
+    def visitFeature(self, ctx:YAPLParser.FeatureContext):
+        featureName = ctx.OBJECTID()
+        featureType = ctx.TYPEID()
+        entry = AttributeTableEntry(featureName, featureType)
+        attributeTable.addEntry(entry)
+        return self.visitChildren(ctx)
+
+    def visitFormal(self, ctx:YAPLParser.FormalContext):
+         featureName = ctx.OBJECTID()
+         featureType = ctx.TYPEID()
+         entry = AttributeTableEntry(featureName, featureType)
+         attributeTable.addEntry(entry)
+         return self.visitChildren(ctx)
+
     def visitAdd(self, ctx:YAPLParser.AddContext):
         childrenResults = []
         for node in ctx.expr():
