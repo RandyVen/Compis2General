@@ -5,18 +5,17 @@ class ClassTable:
             self.entries.append(ClassTableEntry)
 
     def addEntry(self, ClassTableEntry):
-        if self.findEntry(ClassTableEntry.name, ClassTableEntry.inherits) is None:
+        if self.findEntry(ClassTableEntry.name) is None:
             self.entries.append(ClassTableEntry)
         else:
             print("Class {0} already exists".format(ClassTableEntry.name))
             return False
 
-    def findEntry(self, name, inherits):
+    def findEntry(self, name):
         for entry in self.entries:
-            if entry.name == name and entry.inherits == inherits:
+            if entry.name == name:
                 return entry
-            else:
-                return None
+        return None
     
 class ClassTableEntry:
     def __init__(self, name, inherits = None):

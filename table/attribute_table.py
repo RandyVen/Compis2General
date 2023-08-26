@@ -5,18 +5,17 @@ class AttributeTable:
             self.entries.append(AttributeTableEntry)
     
     def addEntry(self, AttributeTableEntry):
-        if self.findEntry(AttributeTableEntry.name, AttributeTableEntry.type, AttributeTableEntry.scope, AttributeTableEntry.inClass, AttributeTableEntry.inMethod) is None:
+        if self.findEntry(AttributeTableEntry.name, AttributeTableEntry.inClass, AttributeTableEntry.inMethod) is None:
             self.entries.append(AttributeTableEntry)
         else:
             print("Attribute {0} already exists".format(AttributeTableEntry.name))
             return False
     
-    def findEntry(self, name, type, scope, inClass, inMethod):
+    def findEntry(self, name, inClass, inMethod):
         for entry in self.entries:
-            if entry.name == name and entry.type == type and entry.scope == scope and entry.inClass == inClass and entry.inMethod == inMethod:
+            if entry.name == name and entry.inClass == inClass and entry.inMethod == inMethod:
                 return entry
-            else:
-                return None
+        return None
 
 class AttributeTableEntry:
     def __init__(self, name, type, scope = None, inClass = None, inMethod = None):
