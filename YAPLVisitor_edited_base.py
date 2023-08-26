@@ -19,7 +19,7 @@ class YaplVisitorEditedBase(YAPLVisitor):
         self.currentMethod = None
         self.currentScope = 1
         self.currentClass = "Debugg"
-        self.currentMethodId = 0
+        self.currentMethodId = 10
         self.foundErrors = []
     
     def visitClass(self, ctx:YAPLParser.ClassExprContext):
@@ -33,7 +33,10 @@ class YaplVisitorEditedBase(YAPLVisitor):
                 return "Error"
         else:
             parentClass = None
-        entry = ClassTableEntry(className, parentClass)
+        if parentClass:
+            entry = ClassTableEntry(className, parentClass)
+        else:
+            entry = ClassTableEntry(className)
         self.classTable.addEntry(entry)
         self.currentClass = className
         self.currentMethod = None
@@ -223,22 +226,34 @@ class YaplVisitorEditedBase(YAPLVisitor):
 
     def visitId(self, ctx:YAPLParser.IdContext):
 
-         varName = str(ctx.ID())
-         if varName == "self":
-             return "SELF_TYPE"
-         #search for varName in attribute table
-         else:
-             varEntry = self.attributeTable.findEntry(varName, self.currentClass, self.currentMethodId)  
-             if varEntry is None:
-                 varEntry = self.attributeTable.findEntry(varName, self.currentClass, None)
-             if varEntry is None:
-                 error = semanticError(ctx.start.line, "Variable " + varName + " not defined")
-                 self.foundErrors.append(error)
-                 return "Error"
-             else:
-                 return varEntry.type
+        varName = str(ctx.ID())
+        if varName == "self":
+            return "SELF_TYPE"
+        #search for varName in attribute table
+        else:
+            varEntry = self.attributeTable.findEntry(varName, self.currentClass, self.currentMethodId,self.currentScope)  
+            if self.currentScope == 3:
+                if varEntry is None:
+                    varEntry = self.attributeTable.findEntry(varName, self.currentClass, self.currentMethodId,self.currentScope-1)
+                if varEntry is None and self.currentScope > 1:
+                    varEntry = self.attributeTable.findEntry(varName, self.currentClass, None,self.currentScope-2)    
+                if varEntry is None:
+                    error = semanticError(ctx.start.line, "Variable " + varName + " not defined")
+                    self.foundErrors.append(error)
+                    return "Error"
+                else:
+                    return varEntry.type
+            else:
+                if varEntry is None:
+                    varEntry = self.attributeTable.findEntry(varName, self.currentClass, None, self.currentScope -1)
+                if varEntry is None:
+                    error = semanticError(ctx.start.line, "Variable " + varName + " not defined")
+                    self.foundErrors.append(error)
+                    return "Error"
+                else:
+                    return varEntry.type
 
-    def visitString(self, ctx:YAPLParser.StringExprContext):
+    def visitString(self, ctx:YAPLParser.StringContext):
          return "String"
     
     def visitNot(self, ctx:YAPLParser.NotContext):
@@ -267,8 +282,6 @@ class YaplVisitorEditedBase(YAPLVisitor):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
-        print(childrenResults)
-        #TODO Ask about the type of the condition
         if childrenResults[0] == "Bool":
             return "Object"
         else:
@@ -296,3 +309,82 @@ class YaplVisitorEditedBase(YAPLVisitor):
     def visitParenthesis(self, ctx:YAPLParser.ParenthesisContext):
         result = self.visit(ctx.expr())
         return result
+
+    # Visit a parse tree produced by YAPL2Parser#isVoidExpr.
+    def visitIsVoidExpr(self, ctx:YAPLParser.IsVoidContext):
+        result = self.visit(ctx.expr())
+        return "Bool"
+    
+    
+    def visitFunction(self, ctx:YAPLParser.FunctionContext):
+        childrenResults = []
+        for node in ctx.expr():
+            childresult = self.visit(node)
+            childrenResults.append(childresult)
+        #Check if the function is defined
+        methodEntry = self.functionTable.findEntryByName(str(ctx.ID()), self.currentClass)
+        if methodEntry:
+            #Check if the number of arguments is correct
+            savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
+            if len(childrenResults) != len(savedParams):
+                error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + str(len(savedParams)) + " parameters but " + str(len(savedParams)) + " were given")
+                self.foundErrors.append(error)
+                return "Error"
+            #Check if the types of the arguments are correct
+            for i in range(len(childrenResults)):
+                if childrenResults[i] != savedParams[i].type:
+                    error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + childrenResults[i] + " was given")
+                    self.foundErrors.append(error)
+                    return "Error"
+            return methodEntry.type
+        #Else check if the function belongs to a parent class
+        else:
+            usingClass = self.classTable.findEntry(self.currentClass)
+            if usingClass:
+                parrentClass = usingClass.inherits
+                if parrentClass:
+                    methodEntry = self.functionTable.findEntryByName(str(ctx.ID()), parrentClass)
+                    if methodEntry:
+                        #Check if the number of arguments is correct
+                        savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
+                        if len(childrenResults) != len(savedParams):
+                            error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + str(len(savedParams)) + " parameters but " + str(len(savedParams)) + " were given")
+                            self.foundErrors.append(error)
+                            return "Error"
+                        #Check if the types of the arguments are correct
+                        for i in range(len(childrenResults)):
+                            if childrenResults[i] != savedParams[i].type:
+                                error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + childrenResults[i] + " was given")
+                                self.foundErrors.append(error)
+                                return "Error"
+                        return methodEntry.type
+                    else:
+                        error = semanticError(ctx.start.line, "Function " + str(ctx.ID()) + " not defined")
+                        self.foundErrors.append(error)
+                        return "Error"
+                else:
+                    error = semanticError(ctx.start.line, "Function " + str(ctx.ID()) + " not defined")
+                    self.foundErrors.append(error)
+                    return "Error"
+            else:
+                return "Error"
+
+
+    def visitLet(self, ctx:YAPLParser.LetContext):
+        self.currentScope = 3
+        firstVisits = ctx.expr()[0:-1]
+        firstVisitsResults = []
+        for node in firstVisits:
+            firstVisitsResults.append(self.visit(node))
+        for i in range(len(ctx.ID())):
+            newVarName = str(ctx.ID()[i])
+            newVarType = str(ctx.TYPE()[i])
+            newVarEntry = AttributeTableEntry(newVarName, newVarType, self.currentScope, self.currentClass, self.currentMethodId)
+            self.attributeTable.addEntry(newVarEntry)
+            if i < len(firstVisitsResults):
+                if firstVisitsResults[i] != newVarType:
+                    error = semanticError(ctx.start.line, "Can't assign " + firstVisitsResults[i] + " to " + newVarType)
+                    self.foundErrors.append(error)
+                    return "Error"
+        lastExpresionResult = self.visit(ctx.expr()[-1])
+        return lastExpresionResult

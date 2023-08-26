@@ -1,14 +1,29 @@
-class ClassTable:
-    def __init__(self, ClassTableEntry = None):
-        self.entries = []
-        if ClassTableEntry:
-            self.entries.append(ClassTableEntry)
+class ClassTableEntry:
+    def __init__(self, name, inherits = "Object"):
+        self.name = name
+        self.inherits = inherits
+    def __str__(self):
+        return '{0} {1}'.format(self.name, self.inherits)
 
-    def addEntry(self, ClassTableEntry):
-        if self.findEntry(ClassTableEntry.name) is None:
-            self.entries.append(ClassTableEntry)
+class ClassTable:
+    def __init__(self, Entry = None):
+        self.entries = []
+        IOEntry = ClassTableEntry("IO", None)
+        ObjectEntry = ClassTableEntry("Object", None)
+        IntEntry = ClassTableEntry("Int", "Object")
+        StringEntry = ClassTableEntry("String", "Object")
+        self.entries.append(IOEntry)
+        self.entries.append(ObjectEntry)
+        self.entries.append(IntEntry)
+        self.entries.append(StringEntry)
+        if Entry:
+            self.entries.append(Entry)
+
+    def addEntry(self, Entry):
+        if self.findEntry(Entry.name) is None:
+            self.entries.append(Entry)
         else:
-            print("Class {0} already exists".format(ClassTableEntry.name))
+            print("Class {0} already exists".format(Entry.name))
             return False
 
     def findEntry(self, name):
@@ -17,9 +32,3 @@ class ClassTable:
                 return entry
         return None
     
-class ClassTableEntry:
-    def __init__(self, name, inherits = None):
-        self.name = name
-        self.inherits = inherits
-    def __str__(self):
-        return '{0} {1}'.format(self.name, self.inherits)
