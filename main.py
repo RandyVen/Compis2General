@@ -8,21 +8,6 @@ from antlr4.tree.Trees import Trees
 import tkinter as tk
 
 
-def tablePrint(visitor):
-    print("==============================SYMBOL TABLE==============================")
-    print("==============================ATTRIBUTE TABLE==============================")
-    for i in visitor.attributeTable.entries:
-        print(i)
-    print("==============================TYPES TABLE==============================")
-    for i in visitor.typesTable.entries:
-        print(i)
-    print("==============================CLASS TABLE==============================")
-    for i in visitor.classTable.entries:
-        print(i)
-    print("==============================FUNCTION TABLE==============================")
-    for i in visitor.functionTable.entries:
-        print(i)
-    print("==============================END==============================")
 
 def gui():
     window = tk.Tk()
@@ -49,7 +34,6 @@ def main(program):
     result = visitor.visit(tree)
     # Showing tables
     
-    tablePrint(visitor)
 
     print(len(visitor.foundErrors))
     for i in visitor.foundErrors:
@@ -57,5 +41,5 @@ def main(program):
     
 if __name__ == "__main__":
     gui()
-
+    #main()
     

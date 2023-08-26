@@ -23,7 +23,7 @@ class ClassTable:
         if self.findEntry(Entry.name) is None:
             self.entries.append(Entry)
         else:
-            print("Class {0} already exists".format(Entry.name))
+            #print("Class {0} already exists".format(Entry.name))
             return False
 
     def findEntry(self, name):
