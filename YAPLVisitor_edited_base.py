@@ -24,9 +24,13 @@ class YaplVisitorEditedBase(YAPLVisitor):
     
     def visitClass(self, ctx:YAPLParser.ClassExprContext):
 
-        className = str(ctx.TYPEID()[0])
-        if len(ctx.TYPEID()) > 1:
-            parentClass = str(ctx.TYPEID()[1])
+        className = str(ctx.TYPE()[0])
+        if len(ctx.TYPE()) > 1:
+            parentClass = str(ctx.TYPE()[1])
+            if not self.classTable.findEntry(parentClass):
+                error = semanticError(ctx.start.line, "Class " + parentClass + " not defined")
+                self.foundErrors.append(error)
+                return "Error"
         else:
             parentClass = None
         entry = ClassTableEntry(className, parentClass)
@@ -36,36 +40,43 @@ class YaplVisitorEditedBase(YAPLVisitor):
         self.currentScope = 1
         return self.visitChildren(ctx)
 
+
     def visitMethod(self, ctx:YAPLParser.MethodContext): 
-
         self.currentMethodId += 1
-
         functionName = str(ctx.ID())
-        type = str(ctx.TYPEID())
-        entry = FunctionTableEntry(self.currentMethodId,functionName, type, currentScope, self.currentClass)
+        type = str(ctx.TYPE())
+        entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
         self.functionTable.addEntry(entry)
         self.currentMethod = functionName
-        currentScope = 2
-        return self.visitChildren(ctx)
+        self.currentScope = 2
+        for node in ctx.formal():
+            self.visit(node)
+        childrenResult = self.visit(ctx.expr())
+        if childrenResult == type:
+            return type
+        else:
+            error = semanticError(ctx.start.line, "Function " + functionName + " returns " + childrenResult + " instead of " + type)
+            self.foundErrors.append(error)
+            return "Error"
     
     def visitFeature(self, ctx:YAPLParser.FeatureContext):
 
-  
         featureName = str(ctx.ID())
-        featureType = str(ctx.TYPEID())
+        featureType = str(ctx.TYPE())
         if self.currentMethod:
             entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
         else:
             entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, None)
         self.attributeTable.addEntry(entry)
-
+        
         return self.visitChildren(ctx)
+    
 
     def visitFormal(self, ctx:YAPLParser.FormalContext):
 
         featureName = str(ctx.ID())
-        featureType = str(ctx.TYPEID())
-        entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
+        featureType = str(ctx.TYPE())
+        entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId, True)
         self.attributeTable.addEntry(entry)
         return self.visitChildren(ctx)
 
@@ -238,3 +249,50 @@ class YaplVisitorEditedBase(YAPLVisitor):
             error = semanticError(ctx.start.line, "Cannot use NOT operator on  " + childrenResult)
             self.foundErrors.append(error)
             return "Error"
+        
+        # Visit a parse tree produced by YAPL2Parser#newExpr.
+    def visitNew(self, ctx:YAPLParser.NewContext):
+        classType = str(ctx.TYPE())
+        if self.classTable.findEntry(classType):
+            return classType
+        else:
+            if self.typesTable.findEntry(classType):
+                return classType
+            else:
+                error = semanticError(ctx.start.line, "Class " + classType + " not defined")
+                self.foundErrors.append(error)
+                return "Error"
+
+    def visitIfElse(self, ctx:YAPLParser.IfElseContext):
+        childrenResults = []
+        for node in ctx.expr():
+            childrenResults.append(self.visit(node))
+        print(childrenResults)
+        #TODO Ask about the type of the condition
+        if childrenResults[0] == "Bool":
+            return "Object"
+        else:
+            error = semanticError(ctx.start.line, "If conditional must be boolean not " + childrenResults[0])
+            self.foundErrors.append(error)
+            return "Error"
+
+    def visitBraket(self, ctx:YAPLParser.BracketContext):
+        childrenResults = []
+        for node in ctx.expr():
+            childrenResults.append(self.visit(node))
+        
+        return childrenResults[-1]
+
+    def visitNot(self, ctx:YAPLParser.NotContext):
+        childrenResult = self.visit(ctx.expr())
+        if childrenResult == "Bool":
+            return "Bool"
+        else:
+            error = semanticError(ctx.start.line, "Cannot use NOT operator on  " + childrenResult)
+            self.foundErrors.append(error)
+            return "Error"
+
+    # Visit a parse tree produced by YAPL2Parser#parenthExpr.
+    def visitParenthesis(self, ctx:YAPLParser.ParenthesisContext):
+        result = self.visit(ctx.expr())
+        return result
