@@ -8,7 +8,7 @@ class ClassTableEntry:
 class ClassTable:
     def __init__(self, Entry = None):
         self.entries = []
-        IOEntry = ClassTableEntry("IO", None)
+        IOEntry = ClassTableEntry("IO", "Object")
         ObjectEntry = ClassTableEntry("Object", None)
         IntEntry = ClassTableEntry("Int", "Object")
         StringEntry = ClassTableEntry("String", "Object")
@@ -22,9 +22,6 @@ class ClassTable:
             self.entries.append(Entry)
 
     def addEntry(self, Entry):
-        print("TESTTT----------------------")
-        print(Entry)
-
         if self.findEntry(Entry.name) is None:
             self.entries.append(Entry)
         else:

@@ -12,6 +12,7 @@ from table.class_table import *
 from table.function_table import *
 from errors import semanticError
 
+
 class YAPL2Visitor(ParseTreeVisitor):
     
     def __init__(self, classTable, functionTable, attributeTable, typesTable, foundErrors):
@@ -25,6 +26,18 @@ class YAPL2Visitor(ParseTreeVisitor):
         self.currentClass = "Debugg"
         self.currentMethodId = 10
         self.foundErrors = []
+    
+    def findFamily(self, currentClass, wantedClass):
+        dad = self.classTable.findEntry(currentClass.inherits)
+        family = []
+        while dad:
+            family.append(dad.name)
+            dad = self.classTable.findEntry(dad.inherits)
+        print(family)
+        if wantedClass not in family:
+            return False
+        else:
+            return True
 
     # Visit a parse tree produced by YAPL2Parser#program.
     def visitProgram(self, ctx:YAPL2Parser.ProgramContext):
@@ -63,17 +76,19 @@ class YAPL2Visitor(ParseTreeVisitor):
         self.currentMethodId += 1
         functionName = str(ctx.OBJECTID())
         type = str(ctx.TYPEID())
-        if type == "SELF_TYPE":
-            print("SELF_TYPE")
-            type = self.currentClass
         # entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
         # self.functionTable.addEntry(entry)
+        if type == "SELF_TYPE":
+            type = self.currentClass
         self.currentMethod = functionName
         self.currentScope = 2
         for node in ctx.formal():
             self.visit(node)
         childrenResult = self.visit(ctx.expr())
-        if childrenResult == type:
+        if childrenResult == "SELF_TYPE":
+            childrenResult = self.currentClass
+    
+        if childrenResult == type or self.findFamily(self.classTable.findEntry(childrenResult), type):
             return type
         else:
             error = semanticError(ctx.start.line, "Function " + functionName + " returns " + childrenResult + " instead of " + type)
@@ -136,6 +151,8 @@ class YAPL2Visitor(ParseTreeVisitor):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
+            if childresult == "SELF_TYPE":
+                childresult = self.currentClass
             childrenResults.append(childresult)
         #Check if the function is defined
         methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), self.currentClass)
@@ -152,7 +169,10 @@ class YAPL2Visitor(ParseTreeVisitor):
                     error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + childrenResults[i] + " was given")
                     self.foundErrors.append(error)
                     return "Error"
-            return methodEntry.type
+            if methodEntry.type == "SELF_TYPE":
+                return childrenResults[0]
+            else:
+                return methodEntry.type
         #Else check if the function belongs to a parent class
         else:
             usingClass = self.classTable.findEntry(self.currentClass)
@@ -173,7 +193,10 @@ class YAPL2Visitor(ParseTreeVisitor):
                                 error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + childrenResults[i] + " was given")
                                 self.foundErrors.append(error)
                                 return "Error"
-                        return methodEntry.type
+                        if methodEntry.type == "SELF_TYPE":
+                            return childrenResults[0]
+                        else:
+                            return methodEntry.type
                     else:
                         error = semanticError(ctx.start.line, "Function " + str(ctx.OBJECTID()) + " not defined")
                         self.foundErrors.append(error)
@@ -201,6 +224,8 @@ class YAPL2Visitor(ParseTreeVisitor):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
+            if childresult == "SELF_TYPE":
+                childresult = self.currentClass
             childrenResults.append(childresult)
         mainClass = childrenResults[0]
         #Check if we are using a method from a parent class
@@ -227,9 +252,7 @@ class YAPL2Visitor(ParseTreeVisitor):
             methodEntry =  self.functionTable.findEntryByName(str(ctx.OBJECTID()), parentClass)
             if methodEntry:
                 params = childrenResults[1:]
-                print(methodEntry.id)
                 savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
-                print(savedParams)
                 if len(params) != len(savedParams):
                     error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + str(len(savedParams)) + " parameters but " + str(len(params)) + " were given")
                     self.foundErrors.append(error)
@@ -239,7 +262,10 @@ class YAPL2Visitor(ParseTreeVisitor):
                         error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + params[i] + " was given")
                         self.foundErrors.append(error)
                         return "Error"
-                return methodEntry.type
+                if methodEntry.type == "SELF_TYPE":
+                    return childrenResults[0]
+                else:
+                    return methodEntry.type
             else:
                 error = semanticError(ctx.start.line, "Method " + str(ctx.OBJECTID()) + " not defined in " + parentClass)
                 self.foundErrors.append(error)
@@ -249,9 +275,7 @@ class YAPL2Visitor(ParseTreeVisitor):
             methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), mainClass)
             if methodEntry:
                 params = childrenResults[1:]
-                print(methodEntry.id)
                 savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
-                print(savedParams)
                 if len(params) != len(savedParams):
                     error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + str(len(savedParams)) + " parameters but " + str(len(params)) + " were given")
                     self.foundErrors.append(error)
@@ -261,7 +285,10 @@ class YAPL2Visitor(ParseTreeVisitor):
                         error = semanticError(ctx.start.line, "Function " + methodEntry.name + " expects " + savedParams[i].type + " as parameter " + str(i+1) + " but " + params[i] + " was given")
                         self.foundErrors.append(error)
                         return "Error"
-                return methodEntry.type
+                if methodEntry.type == "SELF_TYPE":
+                    return childrenResults[0]
+                else:
+                    return methodEntry.type
             else:
                 error = semanticError(ctx.start.line, "Method " + str(ctx.OBJECTID()) + " not defined in " + mainClass)
                 self.foundErrors.append(error)
@@ -280,7 +307,7 @@ class YAPL2Visitor(ParseTreeVisitor):
             self.foundErrors.append(error)
             return "Error"
         childrenResult = self.visitChildren(ctx)
-        if childrenResult == leftsideEntry.type:
+        if childrenResult == leftsideEntry.type or self.findFamily(self.classTable.findEntry(childrenResult), leftsideEntry.type):
             return leftsideEntry.type
         else:
             error = semanticError(ctx.start.line, "Can't assign " + childrenResult + " to " + leftsideEntry.type)
@@ -426,7 +453,7 @@ class YAPL2Visitor(ParseTreeVisitor):
     def visitObjectIdExpr(self, ctx:YAPL2Parser.ObjectIdExprContext):
         varName = str(ctx.OBJECTID())
         if varName == "self":
-            return self.currentClass
+            return "SELF_TYPE"
         #search for varName in attribute table
         else:
             varEntry = self.attributeTable.findEntry(varName, self.currentClass, self.currentMethodId,self.currentScope)  

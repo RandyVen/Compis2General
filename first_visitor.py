@@ -63,8 +63,6 @@ class FirstVisitor(ParseTreeVisitor):
         self.currentMethodId += 1
         functionName = str(ctx.OBJECTID())
         type = str(ctx.TYPEID())
-        if type == "SELF_TYPE":
-            type = self.currentClass
         entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
         self.functionTable.addEntry(entry)
         self.currentMethod = functionName

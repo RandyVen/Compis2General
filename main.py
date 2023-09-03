@@ -11,7 +11,6 @@ from first_visitor import FirstVisitor
 from errors import semanticError
 from tkinter import filedialog as fd
 
-
 def tablePrint(visitor):
     print("==============================SYMBOL TABLE==============================")
     print("==============================ATTRIBUTE TABLE==============================")
@@ -49,7 +48,6 @@ def gui():
 def loadFile(userInputWindow):
     userInputWindow.delete("1.0", tk.END)
     filename = fd.askopenfilename(initialdir = os.getcwd(), title = "Select file")
-    print(filename)
     with open(filename, 'r') as f:
         lines = f.read()
         userInputWindow.insert(tk.END, lines)
@@ -74,7 +72,7 @@ def main(program, errorsWindow):
     result = visitor.visit(tree)
     # Showing tables
     
-    tablePrint(visitor)
+    #tablePrint(visitor)
     
     if not visitor.classTable.findEntry("Main"):
         error = semanticError(1, "Class Main not defined")
@@ -89,7 +87,6 @@ def main(program, errorsWindow):
             errorsWindow.insert(tk.END,str(i)+"\n")
     else:
         errorsWindow.insert(tk.END, "No errors :D\n")
-        
 if __name__ == "__main__":
     gui()
     #main()
