@@ -1,44 +1,95 @@
 import sys
 import os
+from turtle import left
 from antlr4 import *
-from YAPLLexer import YAPLLexer
-from YAPLParser import YAPLParser
-from YAPLVisitor_edited_base import YaplVisitorEditedBase
+from YAPL2Lexer import YAPL2Lexer
+from YAPL2Parser import YAPL2Parser
+from YAPL2Visitor import YAPL2Visitor
 from antlr4.tree.Trees import Trees
 import tkinter as tk
+from first_visitor import FirstVisitor
+from errors import semanticError
+from tkinter import filedialog as fd
 
 
+def tablePrint(visitor):
+    print("==============================SYMBOL TABLE==============================")
+    print("==============================ATTRIBUTE TABLE==============================")
+    for i in visitor.attributeTable.entries:
+        print(i)
+    print("==============================TYPES TABLE==============================")
+    for i in visitor.typesTable.entries:
+        print(i)
+    print("==============================CLASS TABLE==============================")
+    for i in visitor.classTable.entries:
+        print(i)
+    print("==============================FUNCTION TABLE==============================")
+    for i in visitor.functionTable.entries:
+        print(i)
+    print("==============================END==============================")
 
 def gui():
     window = tk.Tk()
+    buttonsFrame = tk.Frame(window)
+    buttonsFrame.pack()
     window.title("YAPL2 Code")
-    user_input = tk.Text()
-    compileButton = tk.Button(window, text="Compile", command=lambda: main(user_input.get("1.0", tk.END)))
+    user_input = tk.Text(width=100)
+    errorsWindow = tk.Text(width = 100)
+    compileButton = tk.Button(buttonsFrame, text="Compile", command=lambda: main(user_input.get("1.0", tk.END), errorsWindow))
+    loadButton = tk.Button(buttonsFrame, text="Load File", command=lambda: loadFile(user_input))
     
-    user_input.pack()
-    compileButton.pack()
+
+    compileButton.pack(side=tk.LEFT)
+    loadButton.pack(side=tk.LEFT)
+    user_input.pack(fill=tk.X)
+    errorsWindow.pack(fill = tk.X)
     
     window.mainloop()
 
-def main(program):
+def loadFile(userInputWindow):
+    userInputWindow.delete("1.0", tk.END)
+    filename = fd.askopenfilename(initialdir = os.getcwd(), title = "Select file")
+    print(filename)
+    with open(filename, 'r') as f:
+        lines = f.read()
+        userInputWindow.insert(tk.END, lines)
+
+def main(program, errorsWindow):
+    errorsWindow.delete("1.0", tk.END)
     data = InputStream(program)
     #lexer
-    lexer = YAPLLexer(data)
+    lexer = YAPL2Lexer(data)
     stream = CommonTokenStream(lexer)
     #parser
-    parser = YAPLParser(stream)
+    parser = YAPL2Parser(stream)
     tree = parser.program()
 
     #Semantic analysis
-    visitor = YaplVisitorEditedBase()
+    firstVisitor = FirstVisitor()
+    firstVisitor.visit(tree)
+
+    #tablePrint(firstVisitor)
+
+    visitor = YAPL2Visitor(firstVisitor.classTable, firstVisitor.functionTable, firstVisitor.attributeTable, firstVisitor.typesTable, firstVisitor.foundErrors)
     result = visitor.visit(tree)
     # Showing tables
     
-
-    print(len(visitor.foundErrors))
-    for i in visitor.foundErrors:
-        print(i)
+    tablePrint(visitor)
     
+    if not visitor.classTable.findEntry("Main"):
+        error = semanticError(1, "Class Main not defined")
+        visitor.foundErrors.append(error)
+    
+    if not visitor.functionTable.findEntryByName("main", "Main"):
+        error = semanticError(1, "Function main not defined in main")
+        visitor.foundErrors.append(error)
+
+    if len(visitor.foundErrors) > 0:
+        for i in visitor.foundErrors:
+            errorsWindow.insert(tk.END,str(i)+"\n")
+    else:
+        errorsWindow.insert(tk.END, "No errors :D\n")
+        
 if __name__ == "__main__":
     gui()
     #main()

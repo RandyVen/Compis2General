@@ -12,18 +12,23 @@ class ClassTable:
         ObjectEntry = ClassTableEntry("Object", None)
         IntEntry = ClassTableEntry("Int", "Object")
         StringEntry = ClassTableEntry("String", "Object")
+        BoolEntry = ClassTableEntry("Bool", "Object")
         self.entries.append(IOEntry)
         self.entries.append(ObjectEntry)
         self.entries.append(IntEntry)
         self.entries.append(StringEntry)
+        self.entries.append(BoolEntry)
         if Entry:
             self.entries.append(Entry)
 
     def addEntry(self, Entry):
+        print("TESTTT----------------------")
+        print(Entry)
+
         if self.findEntry(Entry.name) is None:
             self.entries.append(Entry)
         else:
-            #print("Class {0} already exists".format(Entry.name))
+            print("Class {0} already exists".format(Entry.name))
             return False
 
     def findEntry(self, name):

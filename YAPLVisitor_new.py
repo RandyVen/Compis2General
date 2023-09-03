@@ -1,4 +1,4 @@
-# Generated from YAPL.g4 by ANTLR 4.10.1
+# Generated from YAPL2.g4 by ANTLR 4.10.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .YAPLParser import YAPLParser
@@ -12,7 +12,7 @@ from table.class_table import *
 from table.function_table import *
 from errors import semanticError
 
-class YAPLVisitor(ParseTreeVisitor):
+class YaplVisitorNew(ParseTreeVisitor):
     
     def __init__(self, classTable, functionTable, attributeTable, typesTable, foundErrors):
         super().__init__()
@@ -31,16 +31,11 @@ class YAPLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by YAPLParser#programBlock.
-    def visitProgramBlock(self, ctx:YAPLParser.ProgramBlockContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by YAPLParser#classDEF.
-    def visitClassDEF(self, ctx:YAPLParser.ClassDEFContext):
-        className = str(ctx.TYPEID()[0])
-        if len(ctx.TYPEID()) > 1:
-            parentClass = str(ctx.TYPEID()[1])
+    def visitClassExpr(self, ctx:YAPLParser.ClassExprContext):
+        className = str(ctx.TYPE()[0])
+        if len(ctx.TYPE()) > 1:
+            parentClass = str(ctx.TYPE()[1])
             if not self.classTable.findEntry(parentClass):
                 error = semanticError(ctx.start.line, "Class " + parentClass + " not defined")
                 self.foundErrors.append(error)
@@ -59,10 +54,10 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#MethodDef.
-    def visitMethodDef(self, ctx:YAPLParser.MethodDefContext):
+    def visitMethod(self, ctx:YAPLParser.MethodContext):
         self.currentMethodId += 1
-        functionName = str(ctx.OBJECTID())
-        type = str(ctx.TYPEID())
+        functionName = str(ctx.ID())
+        type = str(ctx.TYPE())
         if type == "SELF_TYPE":
             print("SELF_TYPE")
             type = self.currentClass
@@ -81,9 +76,9 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
 
     # Visit a parse tree produced by YAPLParser#FeactureDecalration.
-    def visitFeactureDecalration(self, ctx:YAPLParser.FeactureDecalrationContext):
-        # featureName = str(ctx.OBJECTID())
-        # featureType = str(ctx.TYPEID())
+    def visitFeature(self, ctx:YAPLParser.FeatureContext):
+        # featureName = str(ctx.ID())
+        # featureType = str(ctx.TYPE())
         # if self.currentMethod:
         #     entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
         # else:
@@ -95,16 +90,16 @@ class YAPLVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by YAPLParser#formal.
     def visitFormal(self, ctx:YAPLParser.FormalContext):
-        # featureName = str(ctx.OBJECTID())
-        # featureType = str(ctx.TYPEID())
+        # featureName = str(ctx.ID())
+        # featureType = str(ctx.TYPE())
         # entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId, True)
         # self.attributeTable.addEntry(entry)
         return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by YAPLParser#newExpr.
-    def visitNewExpr(self, ctx:YAPLParser.NewExprContext):
-        classType = str(ctx.TYPEID())
+    def visitNew(self, ctx:YAPLParser.NewContext):
+        classType = str(ctx.TYPE())
         if self.classTable.findEntry(classType):
             return classType
         else:
@@ -117,7 +112,7 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#divideExpr.
-    def visitDivideExpr(self, ctx:YAPLParser.DivideExprContext):
+    def visitDivide(self, ctx:YAPLParser.DivideContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
@@ -132,13 +127,13 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#FunctionExpr.
-    def visitFunctionExpr(self, ctx:YAPLParser.FunctionExprContext):
+    def visitFunction(self, ctx:YAPLParser.FunctionContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
             childrenResults.append(childresult)
         #Check if the function is defined
-        methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), self.currentClass)
+        methodEntry = self.functionTable.findEntryByName(str(ctx.ID()), self.currentClass)
         if methodEntry:
             #Check if the number of arguments is correct
             savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
@@ -159,7 +154,7 @@ class YAPLVisitor(ParseTreeVisitor):
             if usingClass:
                 parrentClass = usingClass.inherits
                 if parrentClass:
-                    methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), parrentClass)
+                    methodEntry = self.functionTable.findEntryByName(str(ctx.ID()), parrentClass)
                     if methodEntry:
                         #Check if the number of arguments is correct
                         savedParams = self.attributeTable.findParamsOfFunction(methodEntry.id)
@@ -175,11 +170,11 @@ class YAPLVisitor(ParseTreeVisitor):
                                 return "Error"
                         return methodEntry.type
                     else:
-                        error = semanticError(ctx.start.line, "Function " + str(ctx.OBJECTID()) + " not defined")
+                        error = semanticError(ctx.start.line, "Function " + str(ctx.ID()) + " not defined")
                         self.foundErrors.append(error)
                         return "Error"
                 else:
-                    error = semanticError(ctx.start.line, "Function " + str(ctx.OBJECTID()) + " not defined")
+                    error = semanticError(ctx.start.line, "Function " + str(ctx.ID()) + " not defined")
                     self.foundErrors.append(error)
                     return "Error"
             else:
@@ -187,25 +182,25 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#integerExpr.
-    def visitIntegerExpr(self, ctx:YAPLParser.IntegerExprContext):
+    def visitInteger(self, ctx:YAPLParser.IntegerContext):
         return "Int"
 
 
     # Visit a parse tree produced by YAPLParser#trueExpr.
-    def visitTrueExpr(self, ctx:YAPLParser.TrueExprContext):
+    def visitTrue(self, ctx:YAPLParser.TrueContext):
         return "Bool"
 
 
     # Visit a parse tree produced by YAPLParser#MethodExpr.
-    def visitMethodExpr(self, ctx:YAPLParser.MethodExprContext):
+    def visitMethod(self, ctx:YAPLParser.MethodContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
             childrenResults.append(childresult)
         mainClass = childrenResults[0]
         #Check if we are using a method from a parent class
-        if ctx.TYPEID():
-            parentClass = str(ctx.TYPEID())
+        if ctx.TYPE():
+            parentClass = str(ctx.TYPE())
             #Check if the parent class is defined
             if not self.classTable.findEntry(parentClass):
                 error = semanticError(ctx.start.line, "Class " + parentClass + " not defined")
@@ -224,7 +219,7 @@ class YAPLVisitor(ParseTreeVisitor):
                     return "Error"
 
             # Check if the method is defined in the parent class
-            methodEntry =  self.functionTable.findEntryByName(str(ctx.OBJECTID()), parentClass)
+            methodEntry =  self.functionTable.findEntryByName(str(ctx.ID()), parentClass)
             if methodEntry:
                 params = childrenResults[1:]
                 print(methodEntry.id)
@@ -241,12 +236,12 @@ class YAPLVisitor(ParseTreeVisitor):
                         return "Error"
                 return methodEntry.type
             else:
-                error = semanticError(ctx.start.line, "Method " + str(ctx.OBJECTID()) + " not defined in " + parentClass)
+                error = semanticError(ctx.start.line, "Method " + str(ctx.ID()) + " not defined in " + parentClass)
                 self.foundErrors.append(error)
                 return "Error"
         else:
             # Check if the method is defined in the current class
-            methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), mainClass)
+            methodEntry = self.functionTable.findEntryByName(str(ctx.ID()), mainClass)
             if methodEntry:
                 params = childrenResults[1:]
                 print(methodEntry.id)
@@ -263,13 +258,13 @@ class YAPLVisitor(ParseTreeVisitor):
                         return "Error"
                 return methodEntry.type
             else:
-                error = semanticError(ctx.start.line, "Method " + str(ctx.OBJECTID()) + " not defined in " + mainClass)
+                error = semanticError(ctx.start.line, "Method " + str(ctx.ID()) + " not defined in " + mainClass)
                 self.foundErrors.append(error)
                 return "Error"
 
     # Visit a parse tree produced by YAPLParser#DeclarationExpression.
-    def visitDeclarationExpression(self, ctx:YAPLParser.DeclarationExpressionContext):
-        leftside = str(ctx.OBJECTID())
+    def visitExpr(self, ctx:YAPLParser.ExprContext):
+        leftside = str(ctx.ID())
         #search for leftside in attribute table
         leftsideEntry = self.attributeTable.findEntry(leftside, self.currentClass, self.currentMethodId,self.currentScope)
         #if not found, search without methdod
@@ -288,7 +283,7 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
         
     # Visit a parse tree produced by YAPLParser#ifElseExpr.
-    def visitIfElseExpr(self, ctx:YAPLParser.IfElseExprContext):
+    def visitIfElse(self, ctx:YAPLParser.IfElseContext):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
@@ -303,7 +298,7 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
 
     # Visit a parse tree produced by YAPLParser#lessExpr.
-    def visitLessExpr(self, ctx:YAPLParser.LessExprContext):
+    def visitLess(self, ctx:YAPLParser.LessEqualContext):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
@@ -316,7 +311,7 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#BraketedExpr.
-    def visitBraketedExpr(self, ctx:YAPLParser.BraketedExprContext):
+    def visitBraket(self, ctx:YAPLParser.BracketContext):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
@@ -325,7 +320,7 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#multiplyExpr.
-    def visitMultiplyExpr(self, ctx:YAPLParser.MultiplyExprContext):
+    def visitMultiply(self, ctx:YAPLParser.MultiplyContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
@@ -340,15 +335,15 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#letExpr.
-    def visitLetExpr(self, ctx:YAPLParser.LetExprContext):
+    def visitLet(self, ctx:YAPLParser.LetContext):
         self.currentScope = 3
         firstVisits = ctx.expr()[0:-1]
         firstVisitsResults = []
         for node in firstVisits:
             firstVisitsResults.append(self.visit(node))
-        for i in range(len(ctx.OBJECTID())):
+        for i in range(len(ctx.ID())):
             newVarName = str(ctx.OBJECTID()[i])
-            newVarType = str(ctx.TYPEID()[i])
+            newVarType = str(ctx.TYPE()[i])
             # newVarEntry = AttributeTableEntry(newVarName, newVarType, self.currentScope, self.currentClass, self.currentMethodId)
             # self.attributeTable.addEntry(newVarEntry)
             if i < len(firstVisitsResults):
@@ -362,12 +357,12 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#stringExpr.
-    def visitStringExpr(self, ctx:YAPLParser.StringExprContext):
+    def visitString(self, ctx:YAPLParser.StringContext):
         return "String"
 
 
     # Visit a parse tree produced by YAPLParser#lessEqualExpr.
-    def visitLessEqualExpr(self, ctx:YAPLParser.LessEqualExprContext):
+    def visitLessEqual(self, ctx:YAPLParser.LessEqualContext):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
@@ -381,7 +376,7 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#notExpr.
-    def visitNotExpr(self, ctx:YAPLParser.NotExprContext):
+    def visitNot(self, ctx:YAPLParser.NotContext):
         childrenResult = self.visit(ctx.expr())
         if childrenResult == "Bool" or childrenResult == "Int":
             return childrenResult
@@ -391,7 +386,7 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
 
     # Visit a parse tree produced by YAPLParser#whileExpr.
-    def visitWhileExpr(self, ctx:YAPLParser.WhileExprContext):
+    def visitWhile(self, ctx:YAPLParser.WhileContext):
         childrenResult = []
         for node in ctx.expr():
             childrenResult.append(self.visit(node))
@@ -403,7 +398,7 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
 
     # Visit a parse tree produced by YAPLParser#addExpr.
-    def visitAddExpr(self, ctx:YAPLParser.AddExprContext):
+    def visitAdd(self, ctx:YAPLParser.AddContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
@@ -417,13 +412,13 @@ class YAPLVisitor(ParseTreeVisitor):
             return "Error"
 
     # Visit a parse tree produced by YAPLParser#isVoidExpr.
-    def visitIsVoidExpr(self, ctx:YAPLParser.IsVoidExprContext):
+    def visitIsVoid(self, ctx:YAPLParser.IsVoidContext):
         result = self.visit(ctx.expr())
         return "Bool"
 
 
     # Visit a parse tree produced by YAPLParser#objectIdExpr.
-    def visitObjectIdExpr(self, ctx:YAPLParser.ObjectIdExprContext):
+    def visitId(self, ctx:YAPLParser.IdContext):
         varName = str(ctx.OBJECTID())
         if varName == "self":
             return self.currentClass
@@ -452,7 +447,7 @@ class YAPLVisitor(ParseTreeVisitor):
                     return varEntry.type
 
     # Visit a parse tree produced by YAPLParser#substractExpr.
-    def visitSubstractExpr(self, ctx:YAPLParser.SubstractExprContext):
+    def visitSubstract(self, ctx:YAPLParser.SubstractContext):
         childrenResults = []
         for node in ctx.expr():
             childresult = self.visit(node)
@@ -467,18 +462,18 @@ class YAPLVisitor(ParseTreeVisitor):
 
 
     # Visit a parse tree produced by YAPLParser#falseExpr.
-    def visitFalseExpr(self, ctx:YAPLParser.FalseExprContext):
+    def visitFalse(self, ctx:YAPLParser.FalseContext):
         return "Bool"
 
 
     # Visit a parse tree produced by YAPLParser#parenthExpr.
-    def visitParenthExpr(self, ctx:YAPLParser.ParenthExprContext):
+    def visitParenthesis(self, ctx:YAPLParser.ParenthesisContext):
         result = self.visit(ctx.expr())
         return result
 
 
     # Visit a parse tree produced by YAPLParser#equalExpr.
-    def visitEqualExpr(self, ctx:YAPLParser.EqualExprContext):
+    def visitEqual(self, ctx:YAPLParser.EqualContext):
         childrenResults = []
         for node in ctx.expr():
             childrenResults.append(self.visit(node))

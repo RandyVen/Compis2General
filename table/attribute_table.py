@@ -30,7 +30,7 @@ class AttributeTable:
         if self.findEntry(AttributeTableEntry.name, AttributeTableEntry.inClass, AttributeTableEntry.inMethod, AttributeTableEntry.scope) is None:
             self.entries.append(AttributeTableEntry)
         else:
-            print("Attribute {0} already exists".format(AttributeTableEntry.name))
+            #print("Attribute {0} already exists".format(AttributeTableEntry.name))
             return False
     
     def findEntry(self, name, inClass, inMethod, scope):

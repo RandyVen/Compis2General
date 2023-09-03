@@ -10,20 +10,25 @@ from errors import semanticError
 
 class YaplVisitorEditedBase(YAPLVisitor):
 
-    def __init__(self):
+    def __init__(self, classTable, functionTable, attributeTable, typesTable, foundErrors):
         super().__init__()
-        self.functionTable = FunctionTable()
-        self.attributeTable = AttributeTable()
-        self.typesTable = TypesTable()
-        self.classTable = ClassTable()
+        self.functionTable = functionTable
+        self.attributeTable = attributeTable
+        self.typesTable = typesTable
+        self.classTable = classTable
         self.currentMethod = None
         self.currentScope = 1
         self.currentClass = "Debugg"
         self.currentMethodId = 10
         self.foundErrors = []
-    
-    def visitClass(self, ctx:YAPLParser.ClassExprContext):
 
+
+        # Visit a parse tree produced by YaplVisitorEditedBase#program.
+    def visitProgram(self, ctx:YAPLParser.ProgramContext):
+        return self.visitChildren(ctx)
+
+
+    def visitClass(self, ctx:YAPLParser.ClassExprContext):
         className = str(ctx.TYPE()[0])
         if len(ctx.TYPE()) > 1:
             parentClass = str(ctx.TYPE()[1])
@@ -33,11 +38,11 @@ class YaplVisitorEditedBase(YAPLVisitor):
                 return "Error"
         else:
             parentClass = None
-        if parentClass:
-            entry = ClassTableEntry(className, parentClass)
-        else:
-            entry = ClassTableEntry(className)
-        self.classTable.addEntry(entry)
+        #if parentClass:
+        #    entry = ClassTableEntry(className, parentClass)
+        #else:
+        #    entry = ClassTableEntry(className)
+        #self.classTable.addEntry(entry)
         self.currentClass = className
         self.currentMethod = None
         self.currentScope = 1
@@ -48,8 +53,10 @@ class YaplVisitorEditedBase(YAPLVisitor):
         self.currentMethodId += 1
         functionName = str(ctx.ID())
         type = str(ctx.TYPE())
-        entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
-        self.functionTable.addEntry(entry)
+        if type == "SELF_TYPE":
+             type = self.currentClass
+         # entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
+         # self.functionTable.addEntry(entry)
         self.currentMethod = functionName
         self.currentScope = 2
         for node in ctx.formal():
@@ -64,23 +71,24 @@ class YaplVisitorEditedBase(YAPLVisitor):
     
     def visitFeature(self, ctx:YAPLParser.FeatureContext):
 
-        featureName = str(ctx.ID())
-        featureType = str(ctx.TYPE())
-        if self.currentMethod:
-            entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
-        else:
-            entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, None)
-        self.attributeTable.addEntry(entry)
+        #featureName = str(ctx.ID())
+        #featureType = str(ctx.TYPE())
+        #if self.currentMethod:
+        #    entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
+        #else:
+        #    entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, None)
+        #self.attributeTable.addEntry(entry)
         
         return self.visitChildren(ctx)
     
 
     def visitFormal(self, ctx:YAPLParser.FormalContext):
 
-        featureName = str(ctx.ID())
-        featureType = str(ctx.TYPE())
-        entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId, True)
-        self.attributeTable.addEntry(entry)
+        #featureName = str(ctx.ID())
+        #featureType = str(ctx.TYPE())
+        #entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId, True)
+        #self.attributeTable.addEntry(entry)
+
         return self.visitChildren(ctx)
 
     def visitAdd(self, ctx:YAPLParser.AddContext):
@@ -115,8 +123,8 @@ class YaplVisitorEditedBase(YAPLVisitor):
     # Visit a parse tree produced by YAPLParser#not.
     def visitNot(self, ctx:YAPLParser.NotContext):
         childrenResult = self.visit(ctx.expr())
-        if childrenResult == "Bool":
-            return "Bool"
+        if childrenResult == "Bool" or childrenResult == "Int":
+             return childrenResult
         else:
             error = semanticError(ctx.start.line, "Cannot use NOT operator on  " + childrenResult)
             self.foundErrors.append(error)
@@ -228,7 +236,7 @@ class YaplVisitorEditedBase(YAPLVisitor):
 
         varName = str(ctx.ID())
         if varName == "self":
-            return "SELF_TYPE"
+            return self.currentClass
         #search for varName in attribute table
         else:
             varEntry = self.attributeTable.findEntry(varName, self.currentClass, self.currentMethodId,self.currentScope)  
@@ -283,6 +291,8 @@ class YaplVisitorEditedBase(YAPLVisitor):
         for node in ctx.expr():
             childrenResults.append(self.visit(node))
         if childrenResults[0] == "Bool":
+            if childrenResults[1] == childrenResults[2]:
+                 return childrenResults[1]
             return "Object"
         else:
             error = semanticError(ctx.start.line, "If conditional must be boolean not " + childrenResults[0])
@@ -379,8 +389,8 @@ class YaplVisitorEditedBase(YAPLVisitor):
         for i in range(len(ctx.ID())):
             newVarName = str(ctx.ID()[i])
             newVarType = str(ctx.TYPE()[i])
-            newVarEntry = AttributeTableEntry(newVarName, newVarType, self.currentScope, self.currentClass, self.currentMethodId)
-            self.attributeTable.addEntry(newVarEntry)
+            #newVarEntry = AttributeTableEntry(newVarName, newVarType, self.currentScope, self.currentClass, self.currentMethodId)
+            #self.attributeTable.addEntry(newVarEntry)
             if i < len(firstVisitsResults):
                 if firstVisitsResults[i] != newVarType:
                     error = semanticError(ctx.start.line, "Can't assign " + firstVisitsResults[i] + " to " + newVarType)

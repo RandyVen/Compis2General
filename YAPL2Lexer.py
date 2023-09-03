@@ -1,4 +1,4 @@
-# Generated from YAPL.g4 by ANTLR 4.13.0
+# Generated from YAPL2.g4 by ANTLR 4.10.1
 from antlr4 import *
 from io import StringIO
 import sys
@@ -143,7 +143,7 @@ def serializedATN():
         0,12,0,251,253,261,267,274,317,336,338,351,355,362,1,6,0,0
     ]
 
-class YAPLLexer(Lexer):
+class YAPL2Lexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
@@ -219,11 +219,11 @@ class YAPLLexer(Lexer):
                   "T", "U", "V", "W", "ESC", "UNICODE", "HEX", "OPEN_COMMENT", 
                   "CLOSE_COMMENT", "COMMENT", "ONE_LINE_COMMENT", "WHITESPACE" ]
 
-    grammarFileName = "YAPL.g4"
+    grammarFileName = "YAPL2.g4"
 
     def __init__(self, input=None, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.13.0")
+        self.checkVersion("4.10.1")
         self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
         self._actions = None
         self._predicates = None

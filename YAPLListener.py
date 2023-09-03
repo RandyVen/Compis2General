@@ -8,15 +8,6 @@ else:
 # This class defines a complete listener for a parse tree produced by YAPLParser.
 class YAPLListener(ParseTreeListener):
 
-    # Enter a parse tree produced by YAPLParser#start.
-    def enterStart(self, ctx:YAPLParser.StartContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#start.
-    def exitStart(self, ctx:YAPLParser.StartContext):
-        pass
-
-
     # Enter a parse tree produced by YAPLParser#program.
     def enterProgram(self, ctx:YAPLParser.ProgramContext):
         pass
@@ -26,30 +17,39 @@ class YAPLListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#classExpr.
-    def enterClassExpr(self, ctx:YAPLParser.ClassExprContext):
+    # Enter a parse tree produced by YAPLParser#programBlock.
+    def enterProgramBlock(self, ctx:YAPLParser.ProgramBlockContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#classExpr.
-    def exitClassExpr(self, ctx:YAPLParser.ClassExprContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#method.
-    def enterMethod(self, ctx:YAPLParser.MethodContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#method.
-    def exitMethod(self, ctx:YAPLParser.MethodContext):
+    # Exit a parse tree produced by YAPLParser#programBlock.
+    def exitProgramBlock(self, ctx:YAPLParser.ProgramBlockContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#attribute.
-    def enterAttribute(self, ctx:YAPLParser.AttributeContext):
+    # Enter a parse tree produced by YAPLParser#classDEF.
+    def enterClassDEF(self, ctx:YAPLParser.ClassDEFContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#attribute.
-    def exitAttribute(self, ctx:YAPLParser.AttributeContext):
+    # Exit a parse tree produced by YAPLParser#classDEF.
+    def exitClassDEF(self, ctx:YAPLParser.ClassDEFContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#MethodDef.
+    def enterMethodDef(self, ctx:YAPLParser.MethodDefContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#MethodDef.
+    def exitMethodDef(self, ctx:YAPLParser.MethodDefContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#FeactureDecalration.
+    def enterFeactureDecalration(self, ctx:YAPLParser.FeactureDecalrationContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#FeactureDecalration.
+    def exitFeactureDecalration(self, ctx:YAPLParser.FeactureDecalrationContext):
         pass
 
 
@@ -62,219 +62,219 @@ class YAPLListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#add.
-    def enterAdd(self, ctx:YAPLParser.AddContext):
+    # Enter a parse tree produced by YAPLParser#newExpr.
+    def enterNewExpr(self, ctx:YAPLParser.NewExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#add.
-    def exitAdd(self, ctx:YAPLParser.AddContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#new.
-    def enterNew(self, ctx:YAPLParser.NewContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#new.
-    def exitNew(self, ctx:YAPLParser.NewContext):
+    # Exit a parse tree produced by YAPLParser#newExpr.
+    def exitNewExpr(self, ctx:YAPLParser.NewExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#negation.
-    def enterNegation(self, ctx:YAPLParser.NegationContext):
+    # Enter a parse tree produced by YAPLParser#divideExpr.
+    def enterDivideExpr(self, ctx:YAPLParser.DivideExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#negation.
-    def exitNegation(self, ctx:YAPLParser.NegationContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#dispatch.
-    def enterDispatch(self, ctx:YAPLParser.DispatchContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#dispatch.
-    def exitDispatch(self, ctx:YAPLParser.DispatchContext):
+    # Exit a parse tree produced by YAPLParser#divideExpr.
+    def exitDivideExpr(self, ctx:YAPLParser.DivideExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#string.
-    def enterString(self, ctx:YAPLParser.StringContext):
+    # Enter a parse tree produced by YAPLParser#FunctionExpr.
+    def enterFunctionExpr(self, ctx:YAPLParser.FunctionExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#string.
-    def exitString(self, ctx:YAPLParser.StringContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#assignment.
-    def enterAssignment(self, ctx:YAPLParser.AssignmentContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#assignment.
-    def exitAssignment(self, ctx:YAPLParser.AssignmentContext):
+    # Exit a parse tree produced by YAPLParser#FunctionExpr.
+    def exitFunctionExpr(self, ctx:YAPLParser.FunctionExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#false.
-    def enterFalse(self, ctx:YAPLParser.FalseContext):
+    # Enter a parse tree produced by YAPLParser#integerExpr.
+    def enterIntegerExpr(self, ctx:YAPLParser.IntegerExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#false.
-    def exitFalse(self, ctx:YAPLParser.FalseContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#integer.
-    def enterInteger(self, ctx:YAPLParser.IntegerContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#integer.
-    def exitInteger(self, ctx:YAPLParser.IntegerContext):
+    # Exit a parse tree produced by YAPLParser#integerExpr.
+    def exitIntegerExpr(self, ctx:YAPLParser.IntegerExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#while.
-    def enterWhile(self, ctx:YAPLParser.WhileContext):
+    # Enter a parse tree produced by YAPLParser#trueExpr.
+    def enterTrueExpr(self, ctx:YAPLParser.TrueExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#while.
-    def exitWhile(self, ctx:YAPLParser.WhileContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#parenthesis.
-    def enterParenthesis(self, ctx:YAPLParser.ParenthesisContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#parenthesis.
-    def exitParenthesis(self, ctx:YAPLParser.ParenthesisContext):
+    # Exit a parse tree produced by YAPLParser#trueExpr.
+    def exitTrueExpr(self, ctx:YAPLParser.TrueExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#equal.
-    def enterEqual(self, ctx:YAPLParser.EqualContext):
+    # Enter a parse tree produced by YAPLParser#MethodExpr.
+    def enterMethodExpr(self, ctx:YAPLParser.MethodExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#equal.
-    def exitEqual(self, ctx:YAPLParser.EqualContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#not.
-    def enterNot(self, ctx:YAPLParser.NotContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#not.
-    def exitNot(self, ctx:YAPLParser.NotContext):
+    # Exit a parse tree produced by YAPLParser#MethodExpr.
+    def exitMethodExpr(self, ctx:YAPLParser.MethodExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#isVoid.
-    def enterIsVoid(self, ctx:YAPLParser.IsVoidContext):
+    # Enter a parse tree produced by YAPLParser#DeclarationExpression.
+    def enterDeclarationExpression(self, ctx:YAPLParser.DeclarationExpressionContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#isVoid.
-    def exitIsVoid(self, ctx:YAPLParser.IsVoidContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#function.
-    def enterFunction(self, ctx:YAPLParser.FunctionContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#function.
-    def exitFunction(self, ctx:YAPLParser.FunctionContext):
+    # Exit a parse tree produced by YAPLParser#DeclarationExpression.
+    def exitDeclarationExpression(self, ctx:YAPLParser.DeclarationExpressionContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#lessThan.
-    def enterLessThan(self, ctx:YAPLParser.LessThanContext):
+    # Enter a parse tree produced by YAPLParser#ifElseExpr.
+    def enterIfElseExpr(self, ctx:YAPLParser.IfElseExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#lessThan.
-    def exitLessThan(self, ctx:YAPLParser.LessThanContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#bracket.
-    def enterBracket(self, ctx:YAPLParser.BracketContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#bracket.
-    def exitBracket(self, ctx:YAPLParser.BracketContext):
+    # Exit a parse tree produced by YAPLParser#ifElseExpr.
+    def exitIfElseExpr(self, ctx:YAPLParser.IfElseExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#true.
-    def enterTrue(self, ctx:YAPLParser.TrueContext):
+    # Enter a parse tree produced by YAPLParser#lessExpr.
+    def enterLessExpr(self, ctx:YAPLParser.LessExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#true.
-    def exitTrue(self, ctx:YAPLParser.TrueContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#let.
-    def enterLet(self, ctx:YAPLParser.LetContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#let.
-    def exitLet(self, ctx:YAPLParser.LetContext):
+    # Exit a parse tree produced by YAPLParser#lessExpr.
+    def exitLessExpr(self, ctx:YAPLParser.LessExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#divide.
-    def enterDivide(self, ctx:YAPLParser.DivideContext):
+    # Enter a parse tree produced by YAPLParser#BraketedExpr.
+    def enterBraketedExpr(self, ctx:YAPLParser.BraketedExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#divide.
-    def exitDivide(self, ctx:YAPLParser.DivideContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#id.
-    def enterId(self, ctx:YAPLParser.IdContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#id.
-    def exitId(self, ctx:YAPLParser.IdContext):
+    # Exit a parse tree produced by YAPLParser#BraketedExpr.
+    def exitBraketedExpr(self, ctx:YAPLParser.BraketedExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#lessEqual.
-    def enterLessEqual(self, ctx:YAPLParser.LessEqualContext):
+    # Enter a parse tree produced by YAPLParser#multiplyExpr.
+    def enterMultiplyExpr(self, ctx:YAPLParser.MultiplyExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#lessEqual.
-    def exitLessEqual(self, ctx:YAPLParser.LessEqualContext):
-        pass
-
-
-    # Enter a parse tree produced by YAPLParser#multiply.
-    def enterMultiply(self, ctx:YAPLParser.MultiplyContext):
-        pass
-
-    # Exit a parse tree produced by YAPLParser#multiply.
-    def exitMultiply(self, ctx:YAPLParser.MultiplyContext):
+    # Exit a parse tree produced by YAPLParser#multiplyExpr.
+    def exitMultiplyExpr(self, ctx:YAPLParser.MultiplyExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#ifElse.
-    def enterIfElse(self, ctx:YAPLParser.IfElseContext):
+    # Enter a parse tree produced by YAPLParser#letExpr.
+    def enterLetExpr(self, ctx:YAPLParser.LetExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#ifElse.
-    def exitIfElse(self, ctx:YAPLParser.IfElseContext):
+    # Exit a parse tree produced by YAPLParser#letExpr.
+    def exitLetExpr(self, ctx:YAPLParser.LetExprContext):
         pass
 
 
-    # Enter a parse tree produced by YAPLParser#substract.
-    def enterSubstract(self, ctx:YAPLParser.SubstractContext):
+    # Enter a parse tree produced by YAPLParser#neggateExpr.
+    def enterNeggateExpr(self, ctx:YAPLParser.NeggateExprContext):
         pass
 
-    # Exit a parse tree produced by YAPLParser#substract.
-    def exitSubstract(self, ctx:YAPLParser.SubstractContext):
+    # Exit a parse tree produced by YAPLParser#neggateExpr.
+    def exitNeggateExpr(self, ctx:YAPLParser.NeggateExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#stringExpr.
+    def enterStringExpr(self, ctx:YAPLParser.StringExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#stringExpr.
+    def exitStringExpr(self, ctx:YAPLParser.StringExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#lessEqualExpr.
+    def enterLessEqualExpr(self, ctx:YAPLParser.LessEqualExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#lessEqualExpr.
+    def exitLessEqualExpr(self, ctx:YAPLParser.LessEqualExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#notExpr.
+    def enterNotExpr(self, ctx:YAPLParser.NotExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#notExpr.
+    def exitNotExpr(self, ctx:YAPLParser.NotExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#whileExpr.
+    def enterWhileExpr(self, ctx:YAPLParser.WhileExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#whileExpr.
+    def exitWhileExpr(self, ctx:YAPLParser.WhileExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#addExpr.
+    def enterAddExpr(self, ctx:YAPLParser.AddExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#addExpr.
+    def exitAddExpr(self, ctx:YAPLParser.AddExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#isVoidExpr.
+    def enterIsVoidExpr(self, ctx:YAPLParser.IsVoidExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#isVoidExpr.
+    def exitIsVoidExpr(self, ctx:YAPLParser.IsVoidExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#objectIdExpr.
+    def enterObjectIdExpr(self, ctx:YAPLParser.ObjectIdExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#objectIdExpr.
+    def exitObjectIdExpr(self, ctx:YAPLParser.ObjectIdExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#substractExpr.
+    def enterSubstractExpr(self, ctx:YAPLParser.SubstractExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#substractExpr.
+    def exitSubstractExpr(self, ctx:YAPLParser.SubstractExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#falseExpr.
+    def enterFalseExpr(self, ctx:YAPLParser.FalseExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#falseExpr.
+    def exitFalseExpr(self, ctx:YAPLParser.FalseExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#parenthExpr.
+    def enterParenthExpr(self, ctx:YAPLParser.ParenthExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#parenthExpr.
+    def exitParenthExpr(self, ctx:YAPLParser.ParenthExprContext):
+        pass
+
+
+    # Enter a parse tree produced by YAPLParser#equalExpr.
+    def enterEqualExpr(self, ctx:YAPLParser.EqualExprContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#equalExpr.
+    def exitEqualExpr(self, ctx:YAPLParser.EqualExprContext):
         pass
 
 
