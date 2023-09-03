@@ -1,13 +1,15 @@
 class AttributeTableEntry:
-    def __init__(self, name, type, scope = None, inClass = None, inMethod = None, isParam = False):
+    def __init__(self, name, type, scope = None, inClass = None, inMethod = None, isParam = False, size = 0, offset = 0):
         self.name = name
         self.type = type
         self.scope = scope
         self.inClass = inClass
         self.inMethod = inMethod
         self.isParam = isParam
+        self.size = size
+        self.offset = offset
     def __str__(self):
-        return '{0} {1} {2} {3} {4} {5}'.format(self.name, self.type, self.scope, self.inClass, self.inMethod, self.isParam)
+        return 'name: {0} type: {1} scope: {2} {3} {4} {5} /// bits size: {6} offset: {7}'.format(self.name, self.type, self.scope, self.inClass, self.inMethod, self.isParam, self.size, self.offset)
 
 
 class AttributeTable:
@@ -46,4 +48,11 @@ class AttributeTable:
                 if entry.isParam:
                     results.append(entry)
         return results
-        
+    
+    def findLetsOffFunction(self, inMethod):
+        results = []
+        for entry in self.entries:
+            if entry.inMethod == inMethod:
+                if not entry.isParam:
+                    results.append(entry)
+        return results

@@ -67,7 +67,7 @@ def main(program, errorsWindow):
     firstVisitor = FirstVisitor()
     firstVisitor.visit(tree)
 
-    #tablePrint(firstVisitor)
+    tablePrint(firstVisitor)
     
 
     visitor = YAPL2Visitor(firstVisitor.classTable, firstVisitor.functionTable, firstVisitor.attributeTable, firstVisitor.typesTable, firstVisitor.foundErrors)

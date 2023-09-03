@@ -34,7 +34,7 @@ class YAPL2Visitor(ParseTreeVisitor):
         while dad:
             family.append(dad.name)
             dad = self.classTable.findEntry(dad.inherits)
-        print(family)
+
         if wantedClass not in family:
             return False
         else:
@@ -310,7 +310,7 @@ class YAPL2Visitor(ParseTreeVisitor):
             if leftsideEntry is None:
                 leftsideEntry = self.attributeTable.findEntry(leftside, self.currentClass, None ,scope)
             scope -= 1
-        print("Hi")
+
         if leftsideEntry is None:
             error = semanticError(ctx.start.line, "Variable " + leftside + " not found")
             self.foundErrors.append(error)
