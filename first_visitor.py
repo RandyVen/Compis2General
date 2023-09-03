@@ -51,11 +51,16 @@ class FirstVisitor(ParseTreeVisitor):
             entry = ClassTableEntry(className, parentClass)
         else:
             entry = ClassTableEntry(className)
-        self.classTable.addEntry(entry)
-        self.currentClass = className
-        self.currentMethod = None
-        self.currentScope = 1
-        return self.visitChildren(ctx)
+        result = self.classTable.addEntry(entry)
+        if not result:
+            error = semanticError(ctx.start.line, "Class " + className + " already defined")
+            self.foundErrors.append(error)
+            return "Error"
+        else:
+            self.currentClass = className
+            self.currentMethod = None
+            self.currentScope = 1
+            return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by YAPL2Parser#MethodDef.
@@ -64,12 +69,17 @@ class FirstVisitor(ParseTreeVisitor):
         functionName = str(ctx.OBJECTID())
         type = str(ctx.TYPEID())
         entry = FunctionTableEntry(self.currentMethodId,functionName, type, self.currentScope, self.currentClass)
-        self.functionTable.addEntry(entry)
-        self.currentMethod = functionName
+        result = self.functionTable.addEntry(entry)
         self.currentScope = 2
-        for node in ctx.formal():
-            self.visit(node)
-        return self.visit(ctx.expr())
+        if not result:
+            error = semanticError(ctx.start.line, "Function " + functionName + " already defined")
+            self.foundErrors.append(error)
+            return "Error"
+        else:
+            self.currentMethod = functionName
+            for node in ctx.formal():
+                self.visit(node)
+            return self.visit(ctx.expr())
 
     # Visit a parse tree produced by YAPL2Parser#FeactureDecalration.
     def visitFeactureDecalration(self, ctx:YAPL2Parser.FeactureDecalrationContext):
@@ -79,9 +89,13 @@ class FirstVisitor(ParseTreeVisitor):
             entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId)
         else:
             entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, None)
-        self.attributeTable.addEntry(entry)
-        
-        return self.visitChildren(ctx)
+        result = self.attributeTable.addEntry(entry)
+        if not result:
+            error = semanticError(ctx.start.line, "Attribute " + featureName + " already defined")
+            self.foundErrors.append(error)
+            return "Error"
+        else:
+            return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by YAPL2Parser#formal.
@@ -89,8 +103,13 @@ class FirstVisitor(ParseTreeVisitor):
         featureName = str(ctx.OBJECTID())
         featureType = str(ctx.TYPEID())
         entry = AttributeTableEntry(featureName, featureType, self.currentScope, self.currentClass, self.currentMethodId, True)
-        self.attributeTable.addEntry(entry)
-        return self.visitChildren(ctx)
+        result  = self.attributeTable.addEntry(entry)
+        if not result:
+            error = semanticError(ctx.start.line, "Parameter " + featureName + " already defined")
+            self.foundErrors.append(error)
+            return "Error"
+        else:
+            return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by YAPL2Parser#newExpr.
@@ -147,7 +166,7 @@ class FirstVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by YAPL2Parser#letExpr.
     def visitLetExpr(self, ctx:YAPL2Parser.LetExprContext):
-        self.currentScope = 3
+        self.currentScope += 1
         firstVisits = ctx.expr()[0:-1]
         firstVisitsResults = []
         for node in firstVisits:
@@ -156,7 +175,12 @@ class FirstVisitor(ParseTreeVisitor):
             newVarName = str(ctx.OBJECTID()[i])
             newVarType = str(ctx.TYPEID()[i])
             newVarEntry = AttributeTableEntry(newVarName, newVarType, self.currentScope, self.currentClass, self.currentMethodId)
-            self.attributeTable.addEntry(newVarEntry)
+            result = self.attributeTable.addEntry(newVarEntry)
+            if not result:
+                error = semanticError(ctx.start.line, "Variable " + newVarName + " already defined")
+                self.foundErrors.append(error)
+                return "Error"
+        self.currentScope -= 1
         return self.visitChildren(ctx)
 
 

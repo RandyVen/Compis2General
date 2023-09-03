@@ -11,6 +11,7 @@ from first_visitor import FirstVisitor
 from errors import semanticError
 from tkinter import filedialog as fd
 
+
 def tablePrint(visitor):
     print("==============================SYMBOL TABLE==============================")
     print("==============================ATTRIBUTE TABLE==============================")
@@ -67,9 +68,10 @@ def main(program, errorsWindow):
     firstVisitor.visit(tree)
 
     #tablePrint(firstVisitor)
+    
 
     visitor = YAPL2Visitor(firstVisitor.classTable, firstVisitor.functionTable, firstVisitor.attributeTable, firstVisitor.typesTable, firstVisitor.foundErrors)
-    result = visitor.visit(tree)
+    visitor.visit(tree)
     # Showing tables
     
     #tablePrint(visitor)

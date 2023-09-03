@@ -1,3 +1,6 @@
+
+
+
 class FunctionTableEntry:
     def __init__(self,id ,name, type, scope = None,  belongsTo = None):
         self.id = id
@@ -35,8 +38,8 @@ class FunctionTable:
     def addEntry(self, FunctionTableEntry):
         if self.findEntryByName(FunctionTableEntry.name, FunctionTableEntry.belongsTo) is None:
             self.entries.append(FunctionTableEntry)
+            return True
         else:
-            #print("Function {0} already exists".format(FunctionTableEntry.name))
             return False
 
     def findEntryByName(self, name, belongsTo):
@@ -50,3 +53,4 @@ class FunctionTable:
             if entry.id == id:
                 return entry
         return None
+
