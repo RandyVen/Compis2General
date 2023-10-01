@@ -1,14 +1,15 @@
-import sys
 import os
-from turtle import left
 from antlr4 import *
+from antlr4.tree.Trees import Trees
+
 from YAPL2Lexer import YAPL2Lexer
 from YAPL2Parser import YAPL2Parser
 from YAPL2Visitor import YAPL2Visitor
-from antlr4.tree.Trees import Trees
-import tkinter as tk
 from first_visitor import FirstVisitor
+from intermediateCodeGenerator import IntermediateCodeGenerator
 from errors import semanticError
+
+import tkinter as tk
 from tkinter import filedialog as fd
 
 
@@ -67,14 +68,14 @@ def main(program, errorsWindow):
     firstVisitor = FirstVisitor()
     firstVisitor.visit(tree)
 
-    tablePrint(firstVisitor)
+    #tablePrint(firstVisitor)
     
 
     visitor = YAPL2Visitor(firstVisitor.classTable, firstVisitor.functionTable, firstVisitor.attributeTable, firstVisitor.typesTable, firstVisitor.foundErrors)
     visitor.visit(tree)
     # Showing tables
     
-    #tablePrint(visitor)
+    tablePrint(visitor)
     
     if not visitor.classTable.findEntry("Main"):
         error = semanticError(1, "Class Main not defined")
@@ -89,7 +90,9 @@ def main(program, errorsWindow):
             errorsWindow.insert(tk.END,str(i)+"\n")
     else:
         errorsWindow.insert(tk.END, "No errors :D\n")
+
+    intCodeGenerator = IntermediateCodeGenerator(visitor.classTable, visitor.functionTable, visitor.attributeTable, visitor.typesTable)
+    intCodeGenerator.visit(tree)
+    
 if __name__ == "__main__":
     gui()
-    #main()
-    
