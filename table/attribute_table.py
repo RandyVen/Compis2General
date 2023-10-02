@@ -9,7 +9,7 @@ class AttributeTableEntry:
         self.size = size
         self.offset = offset
     def __str__(self):
-        return 'name: {0} type: {1} scope: {2} {3} {4} {5} /// bits size: {6} offset: {7}'.format(self.name, self.type, self.scope, self.inClass, self.inMethod, self.isParam, self.size, self.offset)
+        return '{0} {1} {2} {3} {4} {5} {6} {7}'.format(self.name, self.type, self.scope, self.inClass, self.inMethod, self.isParam, self.size, self.offset)
 
 
 class AttributeTable:

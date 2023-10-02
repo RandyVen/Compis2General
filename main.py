@@ -6,7 +6,7 @@ from YAPL2Lexer import YAPL2Lexer
 from YAPL2Parser import YAPL2Parser
 from YAPL2Visitor import YAPL2Visitor
 from first_visitor import FirstVisitor
-from intermediateCodeGenerator import IntermediateCodeGenerator
+from intermediate_code_generator import IntermediateCodeGenerator
 from errors import semanticError
 
 import tkinter as tk
@@ -92,7 +92,10 @@ def main(program, errorsWindow):
         errorsWindow.insert(tk.END, "No errors :D\n")
 
     intCodeGenerator = IntermediateCodeGenerator(visitor.classTable, visitor.functionTable, visitor.attributeTable, visitor.typesTable)
+    print("INTERMEDIATE CODE")
     intCodeGenerator.visit(tree)
     
 if __name__ == "__main__":
     gui()
+
+    

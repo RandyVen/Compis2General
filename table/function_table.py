@@ -1,6 +1,3 @@
-
-
-
 class FunctionTableEntry:
     def __init__(self,id ,name, type, scope = None,  belongsTo = None):
         self.id = id
@@ -53,4 +50,3 @@ class FunctionTable:
             if entry.id == id:
                 return entry
         return None
-

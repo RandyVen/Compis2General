@@ -12,6 +12,7 @@ from table.class_table import *
 from table.function_table import *
 from errors import semanticError
 
+
 class YAPL2Visitor(ParseTreeVisitor):
     
     def __init__(self, classTable, functionTable, attributeTable, typesTable, foundErrors):
@@ -34,7 +35,6 @@ class YAPL2Visitor(ParseTreeVisitor):
         while dad:
             family.append(dad.name)
             dad = self.classTable.findEntry(dad.inherits)
-
         if wantedClass not in family:
             return False
         else:
@@ -310,7 +310,6 @@ class YAPL2Visitor(ParseTreeVisitor):
             if leftsideEntry is None:
                 leftsideEntry = self.attributeTable.findEntry(leftside, self.currentClass, None ,scope)
             scope -= 1
-
         if leftsideEntry is None:
             error = semanticError(ctx.start.line, "Variable " + leftside + " not found")
             self.foundErrors.append(error)

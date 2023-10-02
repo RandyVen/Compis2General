@@ -4,7 +4,7 @@ class ClassTableEntry:
         self.inherits = inherits
         self.size = size
     def __str__(self):
-        return '{0} {1} {2}'.format(self.name, self.inherits, self.size)
+        return '{0} {1} /// Size: {2}'.format(self.name, self.inherits, self.size)
 
 class ClassTable:
     def __init__(self, Entry = None):
@@ -34,3 +34,4 @@ class ClassTable:
             if entry.name == name:
                 return entry
         return None
+    
