@@ -198,11 +198,10 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         productionInfo.addCode([Quadruple("allocate_in_stack", size, None)])
         for i in range(len(params)):
             if i < len(savedParams):
-                 
                 productionInfo.addCode(params[i].code)
                 productionInfo.addCode([Quadruple("=",params[i].addr,"Function_{0}@{1}[{2}]".format(methodEntry.name,methodEntry.belongsTo,savedParams[i].offset))])
         productionInfo.addCode([Quadruple("call","{}@{}".format(methodEntry.name, methodEntry.belongsTo), None)])
-        productionInfo.addr = "functionCallReturnAddr"
+        productionInfo.setAddr("functionCallReturnAddr")
         return productionInfo
 
     # Visit a parse tree produced by YAPL2Parser#DeclarationExpression.
@@ -222,8 +221,10 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         if assignToEntry.inMethod:
             methodEntry = self.functionTable.findEntryByID(assignToEntry.inMethod)
             codeToAdd = Quadruple("=",childrenResult.addr,"Function_{0}@{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
+            productionInfo.setAddr("Function_{0}@{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
         else:
             codeToAdd = Quadruple("=",childrenResult.addr,"OBJECT_{0}[{1}]".format(assignToEntry.inClass, assignToEntry.offset))
+            productionInfo.setAddr("OBJECT_{0}[{1}]".format(assignToEntry.inClass, assignToEntry.offset))
         productionInfo.addCode([codeToAdd])
         return productionInfo
         
@@ -233,18 +234,25 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         next = self.labelGenerator.generateNext()
         booleanTrue, booleanFalse = self.labelGenerator.generateIfLabels()
         ctx.inheritedAttributes = (next, booleanTrue, booleanFalse)
+        returnAddr = self.temporalGenerator.newTemporal()
         childrenResults = []
         productionInfo.next = next
         for node in ctx.expr():
             result = self.visit(node)
             childrenResults.append(result)
         productionInfo.addCode(childrenResults[0].code)
+        if childrenResults[0].code[-1].opp != "goto":
+            productionInfo.addCode([Quadruple("eq",childrenResults[0].addr, booleanTrue, 1)])
+            productionInfo.addCode([Quadruple("goto", booleanFalse, None)]) 
         productionInfo.addCode([Quadruple("label",booleanTrue,None)])
         productionInfo.addCode(childrenResults[1].code)
+        productionInfo.addCode([Quadruple("=",childrenResults[1].addr,returnAddr)])
         productionInfo.addCode([Quadruple("goto",next,None)])
         productionInfo.addCode([Quadruple("label",booleanFalse, None)])
         productionInfo.addCode(childrenResults[2].code)
+        productionInfo.addCode([Quadruple("=",childrenResults[2].addr,returnAddr)])
         productionInfo.addCode([Quadruple("label", next, None)])
+        productionInfo.setAddr(returnAddr)
         #print(productionInfo)
         return productionInfo
 
@@ -309,7 +317,9 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
                     productionInfo.addCode([Quadruple("=",firstVisitsResutls[i].addr, "Function_{0}@{1}[{2}]".format(self.currentMethod,varEntry.inClass, varEntry.offset))])
                 else:
                     productionInfo.addCode([Quadruple("=",firstVisitsResutls[i].addr, "Object_{}[{}]".format(varEntry.inClass, varEntry.offset))])
-        productionInfo.addCode(self.visit(ctx.expr()[-1]).code)
+        lastChild = self.visit(ctx.expr()[-1])
+        productionInfo.addCode(lastChild.code)
+        productionInfo.setAddr(lastChild.addr)
         return productionInfo
 
     # Visit a parse tree produced by YAPL2Parser#stringExpr.
@@ -354,10 +364,14 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             childrenResults.append(result)
         productionInfo.addCode([Quadruple("label",begin,None)])
         productionInfo.addCode(childrenResults[0].code)
+        if childrenResults[0].code[-1].opp != "goto":
+            productionInfo.addCode([Quadruple("eq",childrenResults[0].addr,trueLabel,1)])
+            productionInfo.addCode([Quadruple("goto",falseLabel,None)])
         productionInfo.addCode([Quadruple("label",trueLabel,None)])
         productionInfo.addCode(childrenResults[1].code)
         productionInfo.addCode([Quadruple("goto",begin,None)])
         productionInfo.addCode([Quadruple("label",falseLabel,None)])
+        productionInfo.setAddr(childrenResults[1].addr)
         #print(productionInfo)
         return productionInfo
 

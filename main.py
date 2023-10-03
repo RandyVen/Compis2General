@@ -1,4 +1,5 @@
 import os
+from tkinter.ttk import Style
 from antlr4 import *
 from antlr4.tree.Trees import Trees
 
@@ -10,6 +11,7 @@ from intermediate_code_generator import IntermediateCodeGenerator
 from errors import semanticError
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog as fd
 
 
@@ -29,28 +31,51 @@ def tablePrint(visitor):
         print(i)
     print("==============================END==============================")
 
+
+def set_dark_mode(widget):
+    widget.configure(bg="#2E2E2E", fg="white")
+
 def gui():
     window = tk.Tk()
-    buttonsFrame = tk.Frame(window)
-    codeAndIC = tk.Frame(window)
+    window.configure(bg="#2E2E2E")  # Set the main window background color
+    buttonsFrame = tk.Frame(window, bg="#2E2E2E")
+    codeAndIC = tk.Frame(window, bg="#2E2E2E")
     buttonsFrame.pack()
-    codeAndIC.pack(fill = tk.X)
+    codeAndIC.pack(fill=tk.X)
     window.title("YAPL2 Code")
+
     user_input = tk.Text(codeAndIC)
+
+    set_dark_mode(user_input)
     intermediateCode = tk.Text(codeAndIC)
-    errorsWindow = tk.Text(width = 100)
-    compileButton = tk.Button(buttonsFrame, text="Compile", command=lambda: main(user_input.get("1.0", tk.END), errorsWindow, intermediateCode))
-    loadButton = tk.Button(buttonsFrame, text="Load File", command=lambda: loadFile(user_input))
+
+    set_dark_mode(intermediateCode)
+
+    errorsWindow = tk.Text(width=100)
+    set_dark_mode(errorsWindow)  # Set dark mode for errorsWindow
+
+    # Create a ttk.Style object for customizing widget styles
+    style = ttk.Style()
+    style.theme_use('clam')  # Use the 'clam' theme (you can choose other themes)
+
+    # Define dark mode colors for buttons
+    dark_button_background = '#2E2E2E'
+    dark_button_foreground = 'white'
+
+    # Configure the style for buttons
+    style.configure('Dark.TButton', background=dark_button_background, foreground=dark_button_foreground)
     
+    compileButton = ttk.Button(buttonsFrame, text="Compile", command=lambda: main(user_input.get("1.0", tk.END), errorsWindow, intermediateCode), style='Dark.TButton')
+    loadButton = ttk.Button(buttonsFrame, text="Load File", command=lambda: loadFile(user_input), style='Dark.TButton')
 
     compileButton.pack(side=tk.LEFT)
     loadButton.pack(side=tk.LEFT)
-    user_input.pack(side=tk.LEFT,fill=tk.Y)
-    intermediateCode.pack(side=tk.RIGHT,fill=tk.Y)
-    errorsWindow.pack(fill = tk.X)
-    
-    window.mainloop()
+    user_input.pack(side=tk.LEFT, fill=tk.Y)
+    intermediateCode.pack(side=tk.RIGHT, 
+                          fill=tk.Y)
+    errorsWindow.pack(fill=tk.X)
 
+    window.mainloop()
 def loadFile(userInputWindow):
     userInputWindow.delete("1.0", tk.END)
     filename = fd.askopenfilename(initialdir = os.getcwd(), title = "Select file")
