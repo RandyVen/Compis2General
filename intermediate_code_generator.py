@@ -26,12 +26,19 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
 
     # Visit a parse tree produced by YAPL2Parser#program.
     def visitProgram(self, ctx:YAPL2Parser.ProgramContext):
-        return self.visitChildren(ctx)
+        result = self.visit(ctx.programBlock())
+        return result
 
 
     # Visit a parse tree produced by YAPL2Parser#programBlock.
     def visitProgramBlock(self, ctx:YAPL2Parser.ProgramBlockContext):
-        return self.visitChildren(ctx)
+        productionInfo = ProductionInformation()
+        if not ctx.EOF():
+            classdefResult = self.visit(ctx.classDEF())
+            programBlockResult = self.visit(ctx.programBlock())
+            productionInfo.addCode(classdefResult.code)
+            productionInfo.addCode(programBlockResult.code)
+        return productionInfo
 
 
     # Visit a parse tree produced by YAPL2Parser#classDEF.
@@ -46,7 +53,6 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         for node in ctx.feature():
             result = self.visit(node)
             productionInfo.addCode(result.code)
-        print(productionInfo)
         return productionInfo
 
 
@@ -175,7 +181,6 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         if ctx.TYPEID():
             methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), str(ctx.TYPEID()))
         else:
-            print(childrenResults[0].type)
             mainClass = childrenResults[0].type
             methodEntry = self.functionTable.findEntryByName(str(ctx.OBJECTID()), mainClass) 
             if not methodEntry:

@@ -9,7 +9,7 @@ class Quadruple():
             if self.opp == "=" :
                 return "{0} {1} {2}".format(self.result, self.opp, self.arg1)
             if self.opp == "label":
-                return "{0}:".format(self.arg1)
+                return "\n{0}:\n".format(self.arg1)
             if self.opp == "goto":
                 return "{0} {1}".format(self.opp,self.arg1)
             if self.opp == "<" or self.opp == "<=" or self.opp == "eq":
@@ -22,6 +22,8 @@ class Quadruple():
                 return "{0} = not {1}".format(self.result, self.arg1)
             if self.opp == "void":
                 return "{0} = isVoid {1}".format(self.result, self.arg1)
+            if self.opp =="blank":
+                return ""
             if self.arg2:
                 return "{0} = {1} {2} {3}".format(self.result, self.arg1, self.opp, self.arg2)
             else:

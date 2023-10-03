@@ -32,17 +32,21 @@ def tablePrint(visitor):
 def gui():
     window = tk.Tk()
     buttonsFrame = tk.Frame(window)
+    codeAndIC = tk.Frame(window)
     buttonsFrame.pack()
+    codeAndIC.pack(fill = tk.X)
     window.title("YAPL2 Code")
-    user_input = tk.Text(width=100)
+    user_input = tk.Text(codeAndIC)
+    intermediateCode = tk.Text(codeAndIC)
     errorsWindow = tk.Text(width = 100)
-    compileButton = tk.Button(buttonsFrame, text="Compile", command=lambda: main(user_input.get("1.0", tk.END), errorsWindow))
+    compileButton = tk.Button(buttonsFrame, text="Compile", command=lambda: main(user_input.get("1.0", tk.END), errorsWindow, intermediateCode))
     loadButton = tk.Button(buttonsFrame, text="Load File", command=lambda: loadFile(user_input))
     
 
     compileButton.pack(side=tk.LEFT)
     loadButton.pack(side=tk.LEFT)
-    user_input.pack(fill=tk.X)
+    user_input.pack(side=tk.LEFT,fill=tk.Y)
+    intermediateCode.pack(side=tk.RIGHT,fill=tk.Y)
     errorsWindow.pack(fill = tk.X)
     
     window.mainloop()
@@ -54,8 +58,9 @@ def loadFile(userInputWindow):
         lines = f.read()
         userInputWindow.insert(tk.END, lines)
 
-def main(program, errorsWindow):
+def main(program, errorsWindow, interMediateCodeWindow):
     errorsWindow.delete("1.0", tk.END)
+    interMediateCodeWindow.delete("1.0", tk.END)
     data = InputStream(program)
     #lexer
     lexer = YAPL2Lexer(data)
@@ -75,7 +80,7 @@ def main(program, errorsWindow):
     visitor.visit(tree)
     # Showing tables
     
-    tablePrint(visitor)
+    #tablePrint(visitor)
     
     if not visitor.classTable.findEntry("Main"):
         error = semanticError(1, "Class Main not defined")
@@ -88,14 +93,16 @@ def main(program, errorsWindow):
     if len(visitor.foundErrors) > 0:
         for i in visitor.foundErrors:
             errorsWindow.insert(tk.END,str(i)+"\n")
+            interMediateCodeWindow.insert(tk.END,"Trash in trash out, fix errors")
+            return -1
     else:
         errorsWindow.insert(tk.END, "No errors :D\n")
 
+    
     intCodeGenerator = IntermediateCodeGenerator(visitor.classTable, visitor.functionTable, visitor.attributeTable, visitor.typesTable)
-    print("INTERMEDIATE CODE")
-    intCodeGenerator.visit(tree)
+    intermediateCode = intCodeGenerator.visit(tree)
+    interMediateCodeWindow.insert(tk.END,str(intermediateCode))
     
 if __name__ == "__main__":
     gui()
-
     
