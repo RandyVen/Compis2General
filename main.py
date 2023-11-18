@@ -97,7 +97,7 @@ def main(program, errorsWindow, interMediateCodeWindow):
     visitor.visit(tree)
     # Showing tables
     
-    #tablePrint(visitor)
+    tablePrint(visitor)
     
     if not visitor.classTable.findEntry("Main"):
         error = semanticError(1, "Class Main not defined")
