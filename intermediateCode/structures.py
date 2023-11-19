@@ -52,11 +52,16 @@ class ProductionInformation():
 
 class TemporalGenerator():
     def __init__(self):
-        self.counter = 0
+        self.temporalList = ["t9","t8","t7","t6","t5","t4","t3","t2","t1","t0"]
+
+    def resetTemporalCount(self):
+        self.temporalList = ["t9","t8","t7","t6","t5","t4","t3","t2","t1","t0"]
 
     def newTemporal(self):
-        self.counter +=1
-        return 't{}'.format(self.counter)
+        return self.temporalList.pop(-1)
+    
+    def freeTemporal(self,temporal):
+        self.temporalList.append(temporal)
 
 class LableGenerator():
     def __init__(self):

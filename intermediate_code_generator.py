@@ -48,7 +48,7 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         self.currentMethod = None
         self.currentScope = 1
         productionInfo = ProductionInformation()
-        productionInfo.addCode([Quadruple('label',"innit@{0}".format(className),None)])
+        productionInfo.addCode([Quadruple('label',"innit{0}".format(className),None)])
         
         for node in ctx.feature():
             result = self.visit(node)
@@ -58,12 +58,13 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
 
     # Visit a parse tree produced by YAPL2Parser#MethodDef.
     def visitMethodDef(self, ctx:YAPL2Parser.MethodDefContext):
+        self.temporalGenerator.resetTemporalCount()
         productionInfo = ProductionInformation()
         functionName = str(ctx.OBJECTID())
         self.currentMethodId += 1
         self.currentScope = 2
         childResult = self.visit(ctx.expr())
-        productionInfo.addCode([Quadruple("label","{0}@{1}".format(functionName, self.currentClass),None)])
+        productionInfo.addCode([Quadruple("label","{0}{1}".format(functionName, self.currentClass),None)])
         productionInfo.addCode(childResult.code)
         productionInfo.addCode([Quadruple("=",childResult.addr, "functionCallReturnAddr")])
         #print(productionInfo)
@@ -147,8 +148,8 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         for i in range(len(childrenResults)):
             if i < len(savedParams):
                 productionInfo.addCode(childrenResults[i].code)
-                productionInfo.addCode([Quadruple("=",childrenResults[i].addr,"Function_{0}@{1}[{2}]".format(methodEntry.name,methodEntry.belongsTo,savedParams[i].offset))])
-        productionInfo.addCode([Quadruple("call","{}@{}".format(methodEntry.name, methodEntry.belongsTo), None)])
+                productionInfo.addCode([Quadruple("=",childrenResults[i].addr,"Function_{0}{1}[{2}]".format(methodEntry.name,methodEntry.belongsTo,savedParams[i].offset))])
+        productionInfo.addCode([Quadruple("call","{}{}".format(methodEntry.name, methodEntry.belongsTo), None)])
         productionInfo.addr = "functionCallReturnAddr"
         productionInfo.type = methodEntry.type
         return productionInfo
@@ -199,8 +200,8 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         for i in range(len(params)):
             if i < len(savedParams):
                 productionInfo.addCode(params[i].code)
-                productionInfo.addCode([Quadruple("=",params[i].addr,"Function_{0}@{1}[{2}]".format(methodEntry.name,methodEntry.belongsTo,savedParams[i].offset))])
-        productionInfo.addCode([Quadruple("call","{}@{}".format(methodEntry.name, methodEntry.belongsTo), None)])
+                productionInfo.addCode([Quadruple("=",params[i].addr,"Function_{0}{1}[{2}]".format(methodEntry.name,methodEntry.belongsTo,savedParams[i].offset))])
+        productionInfo.addCode([Quadruple("call","{}{}".format(methodEntry.name, methodEntry.belongsTo), None)])
         productionInfo.setAddr("functionCallReturnAddr")
         return productionInfo
 
@@ -220,12 +221,15 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         productionInfo.addCode(childrenResult.code)
         if assignToEntry.inMethod:
             methodEntry = self.functionTable.findEntryByID(assignToEntry.inMethod)
-            codeToAdd = Quadruple("=",childrenResult.addr,"Function_{0}@{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
-            productionInfo.setAddr("Function_{0}@{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
+            codeToAdd = Quadruple("=",childrenResult.addr,"Function_{0}{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
+            productionInfo.setAddr("Function_{0}{1}[{2}]".format(methodEntry.name,assignToEntry.inClass, assignToEntry.offset))
+            
         else:
             codeToAdd = Quadruple("=",childrenResult.addr,"OBJECT_{0}[{1}]".format(assignToEntry.inClass, assignToEntry.offset))
             productionInfo.setAddr("OBJECT_{0}[{1}]".format(assignToEntry.inClass, assignToEntry.offset))
         productionInfo.addCode([codeToAdd])
+        if len(childrenResult.addr) == 2 and "t" in childrenResult.addr:
+            self.temporalGenerator.freeTemporal(childrenResult.addr)
         return productionInfo
         
     # Visit a parse tree produced by YAPL2Parser#ifElseExpr.
@@ -253,6 +257,10 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
         productionInfo.addCode([Quadruple("=",childrenResults[2].addr,returnAddr)])
         productionInfo.addCode([Quadruple("label", next, None)])
         productionInfo.setAddr(returnAddr)
+        if len(childrenResults[1].addr) == 2 and "t" in childrenResults[1].addr:
+                self.temporalGenerator.freeTemporal(childrenResults[1].addr)
+        if len(childrenResults[2].addr) == 2 and "t" in childrenResults[2].addr:
+                self.temporalGenerator.freeTemporal(childrenResults[2].addr)
         #print(productionInfo)
         return productionInfo
 
@@ -296,6 +304,10 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             childrenResults.append(result)
             productionInfo.addCode(result.code)
         productionCode = Quadruple('*',childrenResults[0].addr, address ,childrenResults[1].addr )
+        if len(childrenResults[0].addr) == 2 and "t" in childrenResults[0].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[0].addr)
+        if len(childrenResults[1].addr) == 2 and "t" in childrenResults[1].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[1].addr)
         productionInfo.addCode([productionCode])
         return productionInfo
 
@@ -314,7 +326,7 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
                 varEntry = self.attributeTable.findEntry(name, self.currentClass, self.currentMethodId, self.currentScope)
                 productionInfo.addCode(firstVisitsResutls[i].code)
                 if varEntry.inClass:
-                    productionInfo.addCode([Quadruple("=",firstVisitsResutls[i].addr, "Function_{0}@{1}[{2}]".format(self.currentMethod,varEntry.inClass, varEntry.offset))])
+                    productionInfo.addCode([Quadruple("=",firstVisitsResutls[i].addr, "Function_{0}{1}[{2}]".format(self.currentMethod,varEntry.inClass, varEntry.offset))])
                 else:
                     productionInfo.addCode([Quadruple("=",firstVisitsResutls[i].addr, "Object_{}[{}]".format(varEntry.inClass, varEntry.offset))])
         lastChild = self.visit(ctx.expr()[-1])
@@ -364,7 +376,8 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             childrenResults.append(result)
         productionInfo.addCode([Quadruple("label",begin,None)])
         productionInfo.addCode(childrenResults[0].code)
-        if childrenResults[0].code[-1].opp != "goto":
+        print(len(childrenResults[0].code))
+        if len(childrenResults[0].code) == 0 or childrenResults[0].code[-1].opp != "goto":
             productionInfo.addCode([Quadruple("eq",childrenResults[0].addr,trueLabel,1)])
             productionInfo.addCode([Quadruple("goto",falseLabel,None)])
         productionInfo.addCode([Quadruple("label",trueLabel,None)])
@@ -387,6 +400,11 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             productionInfo.addCode(result.code)
         productionCode = Quadruple('+',childrenResults[0].addr, address ,childrenResults[1].addr )
         productionInfo.addCode([productionCode])
+        if len(childrenResults[0].addr) == 2 and "t" in childrenResults[0].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[0].addr)
+        if len(childrenResults[1].addr) == 2 and "t" in childrenResults[1].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[1].addr)
+       
         return productionInfo
 
     # Visit a parse tree produced by YAPL2Parser#isVoidExpr.
@@ -414,10 +432,11 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             scope -= 1
         productionInfo = ProductionInformation()
         if varName == "self":
+            productionInfo.setAddr("this")
             return productionInfo
         if varEntry.inMethod:
             methodEntry = self.functionTable.findEntryByID(varEntry.inMethod)
-            productionInfo.setAddr("Function_{0}@{1}[{2}]".format(methodEntry.name,varEntry.inClass, varEntry.offset))
+            productionInfo.setAddr("Function_{0}{1}[{2}]".format(methodEntry.name,varEntry.inClass, varEntry.offset))
         else:
             productionInfo.setAddr("OBJECT_{0}[{1}]".format(varEntry.inClass, varEntry.offset))
         productionInfo.type = varEntry.type
@@ -435,6 +454,10 @@ class IntermediateCodeGenerator(ParseTreeVisitor):
             productionInfo.addCode(result.code)
         productionCode = Quadruple('-',childrenResults[0].addr, address ,childrenResults[1].addr )
         productionInfo.addCode([productionCode])
+        if len(childrenResults[0].addr) == 2 and "t" in childrenResults[0].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[0].addr)
+        if len(childrenResults[1].addr) == 2 and "t" in childrenResults[1].addr:
+            self.temporalGenerator.freeTemporal(childrenResults[1].addr)        
         return productionInfo
 
 

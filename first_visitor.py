@@ -25,7 +25,7 @@ class FirstVisitor(ParseTreeVisitor):
         self.currentClass = "Debugg"
         self.currentMethodId = 10
         self.foundErrors = []
-        self.normalTypes = {"Int": 8, "Bool":1, "String": 8}
+        self.normalTypes = {"Int": 4, "Bool":1, "String": 8}
         self.currOffset = 0
 
     # Visit a parse tree produced by YAPL2Parser#program.
@@ -54,8 +54,10 @@ class FirstVisitor(ParseTreeVisitor):
         self.currentScope = 1
         self.currOffset = 0
         childrenResults = []
+       
         for node in ctx.feature():
-            childrenResults.append(self.visit(node))
+            if self.visit(node):
+             childrenResults.append(self.visit(node))
         if parentClass:
             entry = ClassTableEntry(className, parentClass, size = sum(childrenResults) )
         else:

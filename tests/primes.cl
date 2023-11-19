@@ -41,7 +41,7 @@ class Main inherits IO {
 	fi;   	
 
         if stop <= testee then 
-          "halt".abort()	-- we could think of "halt" as SIGTERM.
+          "halt"@Object.abort()	-- we could think of "halt" as SIGTERM.
         else 
           "continue"
         fi;       
@@ -49,5 +49,5 @@ class Main inherits IO {
       } 
     pool;
     }
-    };
   };
+};
