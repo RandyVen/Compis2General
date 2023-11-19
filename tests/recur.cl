@@ -10,7 +10,6 @@ class Factorial {
        );}
     };
   
-  
   };
 
 class Fibonacci {
@@ -27,15 +26,16 @@ class Fibonacci {
   };
 
 class Main inherits IO {
-    n: Int <- 10;
+    n: Int 
   	facto: Factorial;
   	fibo: Fibonacci;
   
   	main() : SELF_TYPE {
 	{
+		n <- 10;
 	    facto <- new Factorial;
       	fibo <- new Fibonacci;
-      	--out_int(facto.factorial(n));
+      	out_int(facto.factorial(n));
       	out_int(fibo.fibonacci(n));
       	self;
 	}

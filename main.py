@@ -13,7 +13,6 @@ from MipsGenerator import MipsGenerator
 import tkinter as tk
 from tkinter import filedialog as fd
 
-
 def tablePrint(visitor):
     print("==============================SYMBOL TABLE==============================")
     print("==============================ATTRIBUTE TABLE==============================")
@@ -60,7 +59,6 @@ def loadFile(userInputWindow):
         userInputWindow.insert(tk.END, lines)
 
 def main(program, errorsWindow, interMediateCodeWindow):
-
     errorsWindow.delete("1.0", tk.END)
     interMediateCodeWindow.delete("1.0", tk.END)
     data = InputStream(program)
@@ -101,13 +99,12 @@ def main(program, errorsWindow, interMediateCodeWindow):
         errorsWindow.insert(tk.END, "No errors :D\n")
 
     
-
     intCodeGenerator = IntermediateCodeGenerator(visitor.classTable, visitor.functionTable, visitor.attributeTable, visitor.typesTable)
     intermediateCode = intCodeGenerator.visit(tree)
     interMediateCodeWindow.insert(tk.END,str(intermediateCode))
 
     sizeOfMain = visitor.classTable.findEntry("Main").size
-    codeGenerator = MipsGenerator(intermediateCode.code, sizeOfMain)
+    codeGenerator = MipsGenerator(intermediateCode.code, sizeOfMain+ 4)
     codeGenerator.generateMipsCode()
     print("--------------Descriptors----------------")
     print("-----------Register Descriptor ----------")
@@ -116,12 +113,11 @@ def main(program, errorsWindow, interMediateCodeWindow):
     print(codeGenerator.variableDescriptorStack[-1])
     print("------------ MIPS Code ------------------")
     print(codeGenerator)
-
     file = open("./tests/mipsCode.s", "w")
     file.write(str(codeGenerator))
     file.close
     print("Mips code generated in file mipsCode.s in tests Folder")
-
+    print(codeGenerator.functionSizes)
 if __name__ == "__main__":
     gui()
     

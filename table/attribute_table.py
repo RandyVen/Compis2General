@@ -15,11 +15,11 @@ class AttributeTableEntry:
 class AttributeTable:
     def __init__(self, Entry = None):
         self.entries = []
-        outStringEntry = AttributeTableEntry("out_string", "String",2,"IO",4,True,size=1,offset=0)
-        outIntEntry = AttributeTableEntry("out_int", "Int",2,"IO",5,True, size=8, offset=0)
-        concatEntry = AttributeTableEntry("concat", "String",2,"String",9,True, size=1, offset=0)
-        susbstrEntry1 = AttributeTableEntry("start", "Int", 2,"String",10,True, size= 8, offset=0)
-        susbstrEntry2 = AttributeTableEntry("End", "Int", 2,"String",10,True, size=8, offset=8)
+        outStringEntry = AttributeTableEntry("out_string", "String",2,"IO",4,True,size=4,offset=0)
+        outIntEntry = AttributeTableEntry("out_int", "Int",2,"IO",5,True, size=4, offset=0)
+        concatEntry = AttributeTableEntry("concat", "String",2,"String",9,True, size=4, offset=0)
+        susbstrEntry1 = AttributeTableEntry("start", "Int", 2,"String",10,True, size= 4, offset=0)
+        susbstrEntry2 = AttributeTableEntry("End", "Int", 2,"String",10,True, size=4, offset=8)
         self.entries.append(outStringEntry)
         self.entries.append(outIntEntry)
         self.entries.append(concatEntry)
