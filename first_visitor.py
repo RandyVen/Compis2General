@@ -61,6 +61,8 @@ class FirstVisitor(ParseTreeVisitor):
         if parentClass:
             entry = ClassTableEntry(className, parentClass, size = sum(childrenResults) )
         else:
+            print("KJFSDJKDSJFKDSJFKSDJK SJKSFDJKDFSJLDSJ")
+            print(className + " " + childrenResults)
             entry = ClassTableEntry(className, size = sum(childrenResults))
         result = self.classTable.addEntry(entry)
         if not result:

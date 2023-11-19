@@ -106,10 +106,7 @@ def main(program, errorsWindow, interMediateCodeWindow):
     intermediateCode = intCodeGenerator.visit(tree)
     interMediateCodeWindow.insert(tk.END,str(intermediateCode))
 
-
     sizeOfMain = visitor.classTable.findEntry("Main").size
-    print("HOLA")
-
     codeGenerator = MipsGenerator(intermediateCode.code, sizeOfMain)
     codeGenerator.generateMipsCode()
     print("--------------Descriptors----------------")
